@@ -918,6 +918,41 @@ function saveEdit(id) {
   showDetail(id);
 }
 
+function copyAsMd(id) {
+  const p=DATA.find(x=>x.id===id); if (!p) return;
+  const frontmatter = [
+    '---',
+    'имя_краткое: '+(p.name||''),
+    'имя_полное: '+(p.company||''),
+    'тип: '+(p.type||p.position||''),
+    'статус: участник',
+    'стаж_лет: '+(p.assets?p.assets[0]:''),
+    'команда_чел: ',
+    'сайт: '+(p.messenger||''),
+    'телефон: '+(p.phone||''),
+    'email: '+(p.email||''),
+    'адрес: ',
+    'инн: ',
+    'огрн: ',
+    'соцсети: ',
+    'дата_вступления_в_НАРСО: '+(p.created?p.created.slice(0,10):''),
+    'уровень_полноты_данных: ',
+    'ключевая_сила: "'+(p.strength||'')+'"',
+    'ключевая_слабость: "'+(p.weakness||'')+'"',
+    'синергия: "'+(p.synergy||'')+'"',
+    '---',
+    '',
+    p.note||''
+  ].join('\n');
+  navigator.clipboard.writeText(frontmatter).then(()=>{
+    notify('📄 MD скопирован в буфер');
+  }).catch(()=>{
+    // fallback
+    const ta=document.createElement('textarea');
+    ta.value=frontmatter; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+    notify('📄 MD скопирован в буфер');
+  });
+}
 function cancelEdit() { resetForm(); notify('Редактирование отменено'); }
 
 function deletePerson(id) {
@@ -1193,7 +1228,10 @@ function showDetail(id) {
         }).join('')+'</div>';
     })()+
     '<div id="touchesSection'+p.id+'" style="margin-top:16px"></div>'+
-    '<div style="display:flex;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)"><button class="btn-secondary" onclick="editPerson('+p.id+')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg> Редактировать</button></div>';
+    '<div style="display:flex;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">'+
+      '<button class="btn-secondary" onclick="editPerson('+p.id+')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg> Редактировать</button>'+
+      '<button class="btn-outline" onclick="copyAsMd('+p.id+')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px">📄 Копировать как MD</button>'+
+    '</div>';
   renderTouchesSection(p.id);
   document.getElementById('detailModal').classList.add('show');
 }
