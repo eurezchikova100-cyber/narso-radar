@@ -871,6 +871,50 @@ function savePerson() {
 }
 
 function editPerson(id) {
+  const p=DATA.find(x=>x.id===id); if (!p) return;
+  const showComp=p.competencies||'', showReq=p.requests||'';
+  document.getElementById('detailContent').innerHTML=
+    '<button class="modal-close" onclick="closeDetail()">×</button>'+
+    '<h2 style="margin:0 0 20px;font-size:18px;font-weight:700">✏️ Редактирование: '+p.name+'</h2>'+
+    '<div class="detail-grid" style="grid-template-columns:1fr 1fr">'+
+      '<div class="form-row"><label>Имя</label><input id="efName" value="'+escHtml(p.name)+'"></div>'+
+      '<div class="form-row"><label>Компания</label><input id="efCompany" value="'+escHtml(p.company||'')+'"></div>'+
+      '<div class="form-row" style="grid-column:1/-1"><label>Позиция</label><input id="efPosition" value="'+escHtml(p.position||'')+'"></div>'+
+      '<div class="form-row"><label>📞 Телефон</label><input id="efPhone" value="'+escHtml(p.phone||'')+'"></div>'+
+      '<div class="form-row"><label>✉️ Email</label><input id="efEmail" value="'+escHtml(p.email||'')+'"></div>'+
+      '<div class="form-row" style="grid-column:1/-1"><label>💬 Мессенджер / Сайт</label><input id="efMessenger" value="'+escHtml(p.messenger||'')+'"></div>'+
+      '<div class="form-row" style="grid-column:1/-1"><label>🧠 Что предлагает (теги через запятую)</label><input id="efCompetencies" value="'+escHtml(showComp)+'" placeholder="ИИ / Нейросети, Строительство"></div>'+
+      '<div class="form-row" style="grid-column:1/-1"><label>🎯 Что ищет (теги через запятую)</label><input id="efRequests" value="'+escHtml(showReq)+'" placeholder="Партнёры, Инвестиции"></div>'+
+      '<div class="form-row" style="grid-column:1/-1"><label>👁️ Наблюдение</label><textarea id="efNote" style="resize:vertical;min-height:60px">'+escHtml(p.note||'')+'</textarea></div>'+
+      '<div class="form-row"><label>📊 Экспертиза (1-10)</label><input id="efA0" type="number" min="1" max="10" value="'+(p.assets?p.assets[0]:5)+'"></div>'+
+      '<div class="form-row"><label>📊 Ресурсы (1-10)</label><input id="efA1" type="number" min="1" max="10" value="'+(p.assets?p.assets[1]:5)+'"></div>'+
+      '<div class="form-row"><label>📊 Связи (1-10)</label><input id="efA2" type="number" min="1" max="10" value="'+(p.assets?p.assets[2]:5)+'"></div>'+
+      '<div class="form-row"><label>📊 Влияние (1-10)</label><input id="efA3" type="number" min="1" max="10" value="'+(p.assets?p.assets[3]:5)+'"></div>'+
+      '<div class="form-row"><label>⚖️ Потребности (1-10)</label><input id="efL0" type="number" min="1" max="10" value="'+(p.liabilities?p.liabilities[0]:5)+'"></div>'+
+      '<div class="form-row"><label>⚖️ Зависимости (1-10)</label><input id="efL1" type="number" min="1" max="10" value="'+(p.liabilities?p.liabilities[1]:5)+'"></div>'+
+    '</div>'+
+    '<div style="display:flex;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">'+
+      '<button class="btn-primary" onclick="saveEdit('+p.id+')" style="flex:1">💾 Сохранить</button>'+
+      '<button class="btn-secondary" onclick="showDetail('+p.id+')" style="flex:1">Отмена</button>'+
+    '</div>';
+  document.getElementById('detailModal').classList.add('show');
+}
+function saveEdit(id) {
+  const p=DATA.find(x=>x.id===id); if (!p) return;
+  p.name=document.getElementById('efName').value.trim()||p.name;
+  p.company=document.getElementById('efCompany').value.trim();
+  p.position=document.getElementById('efPosition').value.trim();
+  p.phone=document.getElementById('efPhone').value.trim();
+  p.email=document.getElementById('efEmail').value.trim();
+  p.messenger=document.getElementById('efMessenger').value.trim();
+  p.competencies=document.getElementById('efCompetencies').value.trim();
+  p.requests=document.getElementById('efRequests').value.trim();
+  p.note=document.getElementById('efNote').value.trim();
+  p.assets=[+document.getElementById('efA0').value,+document.getElementById('efA1').value,+document.getElementById('efA2').value,+document.getElementById('efA3').value];
+  p.liabilities=[+document.getElementById('efL0').value,+document.getElementById('efL1').value];
+  p.zone=calcPersonZone(p);
+  saveData();
+  notify('✏️ '+p.name+' обновлён');
   showDetail(id);
 }
 
@@ -1149,7 +1193,7 @@ function showDetail(id) {
         }).join('')+'</div>';
     })()+
     '<div id="touchesSection'+p.id+'" style="margin-top:16px"></div>'+
-    '<div style="display:flex;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)"><button class="btn-secondary" onclick="closeDetail();editPerson('+p.id+')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg> Редактировать</button></div>';
+    '<div style="display:flex;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)"><button class="btn-secondary" onclick="editPerson('+p.id+')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg> Редактировать</button></div>';
   renderTouchesSection(p.id);
   document.getElementById('detailModal').classList.add('show');
 }
