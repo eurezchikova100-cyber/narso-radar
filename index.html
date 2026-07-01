@@ -1,0 +1,2829 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Экосистема НАРСО — Радар Кравцова</title>
+<link rel="manifest" href="/radar/manifest.json">
+<meta name="theme-color" content="#1a1a2e">
+<link rel="apple-touch-icon" href="/radar/icon.png">
+<style>
+:root {
+  --bg: #f3f4f8;
+  --surface: #ffffff;
+  --surface-alt: #f8f9fb;
+  --surface-hover: #f0f2f6;
+  --border: #eef2f6;
+  --text: #0f1825;
+  --text-secondary: #5a6a7c;
+  --text-tertiary: #94a3b8;
+  --primary: #0f1825;
+  --primary-light: #1e2d4a;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.04), 0 1px 1px rgba(0,0,0,.02);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.05), 0 2px 4px rgba(0,0,0,.03);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,.08), 0 4px 12px rgba(0,0,0,.04);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --transition: .25s cubic-bezier(.4,0,.2,1);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,sans-serif; background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased; background-image:radial-gradient(circle at 1px 1px, rgba(0,0,0,.03) 1px, transparent 0); background-size:24px 24px; }
+::selection { background:#0f1825; color:white; }
+::-webkit-scrollbar { width:4px; height:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:#d0d5dd; border-radius:4px; }
+::-webkit-scrollbar-thumb:hover { background:#98a1b0; }
+.container { max-width:1200px; margin:0 auto; padding:16px; }
+/* Header */
+header { background:linear-gradient(135deg,#0f1825 0%,#1e2d4a 50%,#0f1825 100%); border-radius:var(--radius-lg); padding:20px 24px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 4px 24px rgba(15,24,37,.15); position:relative; overflow:hidden; }
+header::before { content:''; position:absolute; top:-50%; right:-15%; width:350px; height:350px; background:radial-gradient(circle,rgba(255,255,255,.05) 0%,transparent 70%); border-radius:50%; pointer-events:none; }
+header::after { content:''; position:absolute; bottom:-30%; left:5%; width:250px; height:250px; background:radial-gradient(circle,rgba(255,255,255,.03) 0%,transparent 70%); border-radius:50%; pointer-events:none; }
+header h1 { font-size:20px; font-weight:800; color:white; letter-spacing:-.4px; position:relative; }
+header .subtitle { font-size:11px; color:rgba(255,255,255,.45); margin-top:2px; font-weight:400; position:relative; }
+header button { padding:8px 16px; background:rgba(255,255,255,.08); color:white; border:1px solid rgba(255,255,255,.12); border-radius:var(--radius-sm); font-size:12px; cursor:pointer; transition:var(--transition); backdrop-filter:blur(8px); position:relative; font-weight:500; }
+header button:hover { background:rgba(255,255,255,.16); border-color:rgba(255,255,255,.25); transform:translateY(-1px); }
+/* Stats row */
+.stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px; margin-bottom:16px; }
+.stat-card { background:var(--surface); border-radius:var(--radius-md); padding:16px; text-align:center; box-shadow:var(--shadow-sm); transition:var(--transition); border:1px solid var(--border); position:relative; overflow:hidden; }
+.stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; opacity:0.7; }
+.stat-card:hover { box-shadow:var(--shadow-md); transform:translateY(-2px); border-color:transparent; }
+.stat-card .num { font-size:26px; font-weight:700; letter-spacing:-.5px; }
+.stat-card .label { font-size:11px; color:var(--text-secondary); margin-top:4px; font-weight:500; }
+.stat-card.zone-a::before { background:#9b59b6; } .stat-card.zone-b::before { background:#3498db; }
+.stat-card.zone-c::before { background:#2ecc71; } .stat-card.zone-d::before { background:#e67e22; }
+.stat-card.zone-e::before { background:#f1c40f; } .stat-card.zone-f::before { background:#95a5a6; }
+/* Grid layout */
+.grid { display:grid; grid-template-columns:320px 1fr; gap:16px; }
+@media(max-width:820px){.grid{grid-template-columns:1fr}}
+/* Cards */
+.card { background:var(--surface); border-radius:var(--radius-lg); padding:20px; box-shadow:var(--shadow-sm); border:1px solid var(--border); transition:var(--transition); }
+.card h2 { font-size:15px; font-weight:600; margin-bottom:14px; color:var(--text); letter-spacing:-.2px; }
+.card:hover { box-shadow:var(--shadow-md); }
+/* Tabs */
+.tabs { display:flex; gap:2px; margin-bottom:14px; flex-wrap:wrap; background:#f3f4f8; border-radius:8px; padding:3px; }
+.tab-badge { display:inline-flex;align-items:center;justify-content:center;min-width:16px;height:16px;padding:0 5px;border-radius:8px;background:#dc2626;color:#fff;font-size:9px;font-weight:700;margin-left:4px;line-height:1; }
+.tab { padding:6px 12px; border-radius:5px; font-size:12px; font-weight:500; cursor:pointer; background:transparent; border:none; color:var(--text-secondary); transition:var(--transition); flex:1; white-space:nowrap; }
+.tab.active { background:var(--surface); color:var(--text); box-shadow:0 1px 3px rgba(15,24,37,.08), 0 1px 2px rgba(15,24,37,.04); font-weight:600; }
+.tab:hover:not(.active) { color:var(--text); }
+/* Form elements (kept for compatibility) */
+.form-row { margin-bottom:12px; }
+.form-row label { display:block; font-size:12px; font-weight:500; color:var(--text-secondary); margin-bottom:4px; }
+.form-row input,.form-row select,.form-row textarea { width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:13px; background:var(--surface); color:var(--text); transition:var(--transition); }
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(15,24,37,.08); }
+.form-row textarea { resize:vertical; min-height:60px; }
+.form-row-inline { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.assessment-group { margin:12px 0; padding:14px; background:var(--surface-alt); border-radius:var(--radius-md); border:1px solid var(--border); }
+.assessment-group h3 { font-size:12px; font-weight:600; margin-bottom:10px; color:var(--text); text-transform:uppercase; letter-spacing:.3px; }
+.assessment-row { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+.assessment-row label { font-size:12px; min-width:90px; color:var(--text-secondary); }
+.assessment-row input[type=range] { flex:1; accent-color:var(--primary); height:4px; }
+.assessment-row .val { font-size:12px; font-weight:700; min-width:22px; text-align:right; color:var(--primary); }
+/* Tag selector (simplified, kept for compatibility) */
+.tag-selector { margin-top:4px; }
+.tag-selector .group-label { font-size:11px; color:var(--text-secondary); margin:4px 0 2px; font-weight:600; cursor:pointer; user-select:none; display:flex; align-items:center; gap:4px; padding:2px 0; }
+.tag-selector .group-label:hover { color:var(--text); }
+.tag-selector .group-label::before { content:'▶'; font-size:6px; color:#c0c8d4; transition:transform .15s; }
+.tag-selector .group-label.open::before { transform:rotate(90deg); }
+.tag-selector .tag-group { display:none; flex-wrap:wrap; gap:3px; margin-bottom:4px; padding-left:2px; }
+.tag-selector .tag-group.open { display:flex; }
+.tag-btn { padding:2px 10px; border-radius:10px; font-size:10px; border:1px solid var(--border); background:var(--surface); cursor:pointer; color:var(--text-secondary); transition:var(--transition); }
+.tag-btn:hover { border-color:var(--primary); background:var(--surface-alt); color:var(--text); }
+.tag-btn.active { background:var(--primary); color:white; border-color:var(--primary); }
+.tag-chips { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:4px; min-height:20px; }
+.tag-chip { display:inline-flex; align-items:center; gap:3px; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:500; }
+.tag-chip.comp { background:#e8f5e9; color:#2e7d32; border:1px solid #c8e6c9; }
+.tag-chip.req { background:#fff3e0; color:#e65100; border:1px solid #ffe0b2; }
+.tag-chip .tag-remove { cursor:pointer; font-size:12px; line-height:1; opacity:.5; }
+.tag-chip .tag-remove:hover { opacity:1; }
+.tag-custom-add { display:inline-flex; align-items:center; gap:3px; padding:2px 10px; border-radius:10px; font-size:10px; border:1px dashed #d0d5dd; background:transparent; cursor:pointer; color:var(--text-tertiary); margin-top:3px; }
+.tag-custom-add:hover { border-color:var(--primary); color:var(--primary); }
+.tag-custom-input { display:inline-flex; align-items:center; gap:4px; margin-top:3px; }
+.tag-custom-input input { width:120px; padding:4px 8px; border:1px solid var(--border); border-radius:10px; font-size:10px; }
+.tag-custom-input button { padding:2px 8px; border-radius:10px; font-size:10px; border:none; cursor:pointer; }
+.tag-custom-confirm { background:var(--primary); color:white; }
+.tag-custom-cancel { background:var(--surface-alt); color:var(--text-secondary); }
+/* Zone result */
+.zone-result { padding:10px 14px; border-radius:var(--radius-sm); text-align:center; margin:10px 0; font-weight:600; font-size:13px; }
+/* Buttons */
+.btn-primary { width:100%; padding:11px; background:var(--primary); color:white; border:none; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; transition:var(--transition); }
+.btn-primary:hover { background:var(--primary-light); box-shadow:0 2px 12px rgba(15,24,37,.15); transform:translateY(-1px); }
+.btn-primary:active { transform:translateY(0); }
+.btn-secondary { padding:8px 16px; background:var(--surface); border:1px solid var(--border); border-radius:8px; font-size:12px; cursor:pointer; color:var(--text-secondary); transition:var(--transition); font-weight:500; }
+.btn-secondary:hover { background:#f3f4f8; border-color:#d1d5db; color:var(--text); }
+.btn-danger { padding:4px 10px; background:#fef2f2; color:#dc2626; border:1px solid #fecaca; border-radius:8px; font-size:11px; cursor:pointer; transition:var(--transition); font-weight:500; }
+.btn-danger:hover { background:#fee2e2; border-color:#fca5a5; }
+.btn-outline { padding:8px 16px; background:var(--surface); border:1px solid var(--border); color:var(--text); border-radius:8px; font-size:12px; font-weight:500; cursor:pointer; transition:var(--transition); }
+.btn-outline:hover { background:#f3f4f8; border-color:#d1d5db; }
+/* Table */
+table { width:100%; border-collapse:separate; border-spacing:0; }
+th, td { padding:10px 12px; text-align:left; border-bottom:1px solid #f3f4f8; font-size:13px; }
+th { font-weight:600; color:var(--text-tertiary); font-size:10px; text-transform:uppercase; letter-spacing:.6px; padding-top:6px; padding-bottom:6px; }
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:#f8f9fb; }
+/* Zone badges */
+.zone-badge { display:inline-flex; align-items:center; justify-content:center; padding:2px 8px; border-radius:var(--radius-sm); font-size:10px; font-weight:700; letter-spacing:.3px; min-width:22px; }
+.zone-badge.a { background:#f0e6f6; color:#8e44ad; } .zone-badge.b { background:#dbeafe; color:#2563eb; }
+.zone-badge.c { background:#d1fae5; color:#059669; } .zone-badge.d { background:#fff3e0; color:#d97706; }
+.zone-badge.e { background:#fef9c3; color:#a16207; } .zone-badge.f { background:#f1f5f9; color:#64748b; }
+/* Search */
+.search-bar { display:flex; gap:8px; margin-bottom:14px; }
+.search-bar input { flex:1; padding:10px 14px; border:1px solid var(--border); border-radius:10px; font-size:13px; background:#f8f9fb; color:var(--text); transition:var(--transition); }
+.search-bar input:focus { outline:none; border-color:#d1d5db; background:#ffffff; box-shadow:0 0 0 4px rgba(15,24,37,.04); }
+.search-bar input::placeholder { color:var(--text-tertiary); }
+/* Import area */
+.import-area { border:2px dashed #dce0e8; border-radius:var(--radius-md); padding:28px; text-align:center; cursor:pointer; margin-top:12px; transition:var(--transition); background:#f8f9fb; }
+.import-area:hover { border-color:#9ca3af; background:#f3f4f8; }
+.import-area input[type=file] { display:none; }
+.import-area .icon { font-size:32px; margin-bottom:8px; opacity:.5; }
+.import-area p { font-size:13px; color:var(--text-secondary); }
+/* Sync bar */
+.sync-bar { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+/* Notifications */
+.notification { position:fixed; top:20px; right:20px; padding:14px 24px; border-radius:var(--radius-md); color:white; font-size:13px; font-weight:500; z-index:9999; display:none; max-width:400px; box-shadow:0 8px 32px rgba(15,24,37,.15); backdrop-filter:blur(12px); }
+.notification.show { display:block; animation:slideIn .35s cubic-bezier(.16,1,.3,1); }
+.notification.success { background:linear-gradient(135deg,#059669,#10b981); } .notification.error { background:linear-gradient(135deg,#dc2626,#ef4444); }
+@keyframes slideIn { from{transform:translateX(120%) scale(.9);opacity:0} to{transform:translateX(0) scale(1);opacity:1} }
+@keyframes slideOut { from{transform:translateX(0) scale(1);opacity:1} to{transform:translateX(120%) scale(.9);opacity:0} }
+.hidden { display:none!important; }
+/* Legend */
+.legend { display:flex; gap:10px; flex-wrap:wrap; margin:6px 0 14px; }
+.legend-item { font-size:10px; font-weight:500; display:flex; align-items:center; gap:4px; color:var(--text-secondary); }
+.legend-dot { width:8px; height:8px; border-radius:50%; display:inline-block; }
+/* Avatar row */
+.av-row { display:flex; align-items:center; gap:10px; }
+.av-row img { width:26px; height:26px; border-radius:50%; object-fit:cover; }
+.av-row .company-logo { width:18px; height:18px; object-fit:contain; }
+/* Modal */
+.modal-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(15,24,37,.5); backdrop-filter:blur(6px); display:none; align-items:center; justify-content:center; z-index:1000; padding:20px; }
+.modal-overlay.show { display:flex; animation:fadeIn .2s; }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+.modal-card { background:var(--surface); border-radius:var(--radius-xl); max-width:600px; width:100%; max-height:85vh; overflow-y:auto; padding:32px; box-shadow:0 20px 60px rgba(15,24,37,.12), 0 8px 24px rgba(15,24,37,.08); position:relative; animation:scaleIn .3s cubic-bezier(.16,1,.3,1); }
+.modal-card::-webkit-scrollbar { width:4px; }
+.modal-card::-webkit-scrollbar-thumb { background:#d0d5dd; border-radius:4px; }
+@keyframes scaleIn { from{transform:scale(.92) translateY(12px);opacity:0} to{transform:scale(1) translateY(0);opacity:1} }
+.modal-close { position:absolute; top:14px; right:14px; width:32px; height:32px; border-radius:50%; border:none; background:var(--surface-alt); font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--text-secondary); transition:var(--transition); }
+.modal-close:hover { background:var(--border); color:var(--text); transform:rotate(90deg); }
+/* Person photo */
+.person-photo { width:64px; height:64px; border-radius:50%; object-fit:cover; border:3px solid var(--surface); box-shadow:0 2px 8px rgba(0,0,0,.08); }
+/* Detail grid */
+.detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:16px 0; }
+.detail-item { background:#f8f9fb; border-radius:10px; padding:14px; border:1px solid #eef2f6; }
+.detail-item h4 { font-size:10px; color:var(--text-tertiary); text-transform:uppercase; letter-spacing:.6px; margin-bottom:6px; font-weight:600; }
+.detail-item p { font-size:13px; color:var(--text); line-height:1.5; }
+/* Edit button */
+.edit-btn { background:transparent; border:1px solid var(--border); border-radius:var(--radius-sm); padding:4px 10px; font-size:11px; cursor:pointer; color:var(--text-secondary); transition:var(--transition); font-weight:500; display:inline-flex; align-items:center; gap:3px; }
+.edit-btn:hover { background:var(--primary); color:white; border-color:var(--primary); box-shadow:0 2px 8px rgba(15,24,37,.12); transform:translateY(-1px); }
+.edit-btn:active { transform:translateY(0); }
+/* Graph */
+.graph-wrap { position:relative; width:100%; background:var(--surface); border-radius:var(--radius-md); overflow:hidden; border:1px solid var(--border); }
+.graph-wrap svg { width:100%; height:480px; }
+.graph-tip { position:absolute; pointer-events:none; background:var(--primary); color:white; padding:6px 12px; border-radius:var(--radius-sm); font-size:12px; display:none; z-index:10; white-space:nowrap; box-shadow:var(--shadow-md); }
+.graph-controls { display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; align-items:center; }
+.graph-controls .mode-btn { padding:5px 12px; border-radius:var(--radius-sm); font-size:11px; font-weight:500; cursor:pointer; border:1px solid var(--border); background:var(--surface); color:var(--text-secondary); transition:var(--transition); }
+.graph-controls .mode-btn.active { background:var(--primary); color:white; border-color:var(--primary); }
+.graph-controls .mode-btn:hover:not(.active) { background:var(--surface-alt); }
+.graph-node { cursor:pointer; transition:opacity .15s; }
+.graph-node:hover { opacity:.85; }
+.graph-node text { pointer-events:none; font-size:9px; font-weight:500; }
+.graph-link { stroke:#d0d5dd; stroke-width:1.5; opacity:.5; transition:opacity .15s; }
+.graph-link:hover { opacity:.8; }
+.graph-zone-label { font-size:11px; font-weight:600; text-anchor:middle; }
+.graph-match { stroke-dasharray:4,3; stroke-width:2; opacity:.7; }
+/* Match tags */
+.match-tag { display:inline-block; background:#ecfdf5; color:#065f46; border-radius:6px; padding:3px 10px; font-size:11px; font-weight:500; margin:2px; border:1px solid #d1fae5; }
+.req-tag { display:inline-block; background:#fff7ed; color:#9a3412; border-radius:6px; padding:3px 10px; font-size:11px; font-weight:500; margin:2px; border:1px solid #ffedd5; }
+.match-card { background:var(--surface); border-radius:10px; padding:12px 14px; margin-bottom:8px; display:flex; align-items:center; gap:10px; border:1px solid #eef2f6; transition:var(--transition); }
+.match-card:hover { border-color:#d1d5db; box-shadow:var(--shadow-sm); }
+.match-card .mc-name { font-weight:600; font-size:12px; flex-shrink:0; min-width:110px; color:var(--text); }
+.match-card .mc-tags { flex:1; }
+/* Stage badges */
+.stage-badge { display:inline-block; padding:2px 10px; border-radius:10px; font-size:10px; font-weight:700; }
+.stage-badge.idea { background:#f1f5f9; color:#64748b; } .stage-badge.start { background:#dbeafe; color:#2563eb; }
+.stage-badge.build { background:#d1fae5; color:#059669; } .stage-badge.done { background:#f0e6f6; color:#7c3aed; }
+.stage-badge.frozen { background:#fee2e2; color:#dc2626; }
+/* Project cards */
+.project-card { background:var(--surface); border-radius:10px; padding:14px; margin-bottom:10px; cursor:pointer; border:1px solid #eef2f6; transition:var(--transition); }
+.project-card:hover { border-color:#d1d5db; box-shadow:var(--shadow-sm); }
+.project-card .pc-header { display:flex; justify-content:space-between; align-items:start; margin-bottom:6px; }
+.project-card .pc-name { font-size:14px; font-weight:600; color:var(--text); }
+.project-card .pc-meta { font-size:11px; color:var(--text-secondary); display:flex; gap:10px; flex-wrap:wrap; }
+.project-card .pc-meta span { display:flex; align-items:center; gap:3px; }
+.project-card .pc-people { margin-top:6px; display:flex; gap:3px; flex-wrap:wrap; }
+.project-card .pc-actions { margin-top:8px; display:flex; gap:6px; }
+.project-person-tag { display:inline-flex; align-items:center; gap:3px; padding:1px 8px; background:#e8f5e9; border-radius:10px; font-size:10px; color:#2e7d32; cursor:pointer; font-weight:500; transition:var(--transition); }
+.project-person-tag:hover { background:#c8e6c9; }
+/* Dashboard */
+.db-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin-bottom:14px; }
+.db-card { background:var(--surface); border-radius:10px; padding:16px; text-align:center; border:1px solid #eef2f6; transition:var(--transition); }
+.db-card:hover { box-shadow:var(--shadow-sm); }
+.db-card .db-num { font-size:28px; font-weight:700; letter-spacing:-.5px; }
+.db-card .db-label { font-size:11px; color:var(--text-secondary); margin-top:3px; font-weight:500; }
+.db-chart { height:200px; display:flex; align-items:end; gap:3px; margin-top:10px; }
+.db-bar { flex:1; border-radius:var(--radius-sm) var(--radius-sm) 0 0; min-width:4px; position:relative; transition:height .5s cubic-bezier(.4,0,.2,1); }
+.db-bar:hover { opacity:.85; }
+.db-bar .db-bar-label { position:absolute; bottom:-18px; left:50%; transform:translateX(-50%); font-size:9px; color:var(--text-tertiary); white-space:nowrap; font-weight:500; }
+.db-section { margin-bottom:18px; }
+.db-section h3 { font-size:13px; font-weight:600; margin-bottom:10px; color:var(--text); display:flex; align-items:center; gap:6px; }
+.db-funnel { display:flex; align-items:center; gap:6px; margin-top:8px; flex-wrap:wrap; }
+.db-funnel-item { flex:1; min-width:70px; text-align:center; padding:10px 8px; border-radius:var(--radius-sm); font-size:12px; }
+.db-funnel-item strong { display:block; font-size:18px; }
+.db-activity { display:flex; gap:10px; padding:10px 12px; background:#f8f9fb; border-radius:8px; margin-bottom:6px; font-size:12px; align-items:center; border:1px solid #eef2f6; transition:var(--transition); }
+.db-activity:hover { border-color:#d1d5db; }
+.db-activity .db-activity-icon { font-size:14px; flex-shrink:0; }
+.db-activity .db-activity-body { flex:1; color:var(--text); }
+.db-activity .db-activity-date { font-size:10px; color:var(--text-tertiary); flex-shrink:0; }
+/* Kanban */
+.kb-wrap { display:flex; gap:12px; overflow-x:auto; padding-bottom:10px; min-height:360px; }
+.kb-col { flex:1; min-width:160px; max-width:200px; background:#f8f9fb; border-radius:10px; padding:12px; border:1px solid #eef2f6; }
+.kb-col h4 { font-size:11px; text-transform:uppercase; color:var(--text-secondary); margin-bottom:10px; text-align:center; letter-spacing:.3px; font-weight:600; }
+.kb-card { background:var(--surface); border-radius:8px; padding:12px; margin-bottom:8px; border:1px solid #eef2f6; cursor:pointer; font-size:12px; transition:var(--transition); }
+.kb-card:hover { border-color:#d1d5db; box-shadow:var(--shadow-sm); }
+.kb-card .kb-card-name { font-weight:600; color:var(--text); margin-bottom:3px; }
+.kb-card .kb-card-meta { color:var(--text-secondary); font-size:11px; }
+.kb-card .kb-card-person { display:inline-block; padding:1px 6px; background:#e8f5e9; border-radius:6px; font-size:9px; color:#2e7d32; margin-top:3px; font-weight:500; }
+.kb-col-arrow { text-align:center; font-size:14px; color:var(--text-tertiary); cursor:pointer; padding:3px; transition:var(--transition); }
+.kb-col-arrow:hover { color:var(--primary); }
+/* Responsive */
+@media(max-width:600px) {
+  .container { padding:12px; }
+  header { flex-direction:column; text-align:center; gap:10px; padding:16px; }
+  header::before,header::after { display:none; }
+  .stats { grid-template-columns:repeat(3,1fr); gap:8px; }
+  .stat-card { padding:12px; }
+  .stat-card .num { font-size:20px; }
+  .detail-grid { grid-template-columns:1fr; }
+  .modal-card { padding:20px; margin:10px; }
+  .match-card { flex-direction:column; text-align:center; }
+  .match-card .mc-name { min-width:auto; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <div>
+      <h1>🌿 Экосистема НАРСО</h1>
+      <div class="subtitle">Управление отношениями · проект «Радар Кравцова» · данные в браузере</div>
+  </div>
+  <div style="display:flex;gap:8px">
+    <button onclick="prepImportFromOnto()">⬇ Из Onto</button>
+    <button onclick="prepExportToOnto()">⬆ В Onto</button>
+  </div>
+</header>
+
+<div id="notification" class="notification"></div>
+<div class="stats" id="stats"></div>
+<div class="legend">
+  <span class="legend-item"><span class="legend-dot" style="background:#9b59b6"></span> А: Наставники</span>
+  <span class="legend-item"><span class="legend-dot" style="background:#3498db"></span> Б: Соратники</span>
+  <span class="legend-item"><span class="legend-dot" style="background:#2ecc71"></span> В: Последователи</span>
+  <span class="legend-item"><span class="legend-dot" style="background:#e67e22"></span> Г: Боссы</span>
+  <span class="legend-item"><span class="legend-dot" style="background:#f1c40f"></span> Д: Коллеги</span>
+  <span class="legend-item"><span class="legend-dot" style="background:#95a5a6"></span> Е: Команда</span>
+</div>
+
+<div class="grid">
+  <!-- Admin info panel (instead of add form — data comes from Telegram bot) -->
+  <div class="card">
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('stats',this)">📊 Сводка</button>
+      <button class="tab" onclick="switchTab('import',this)">📥 Импорт</button>
+    </div>
+
+    <div id="tabAdd" class="hidden">
+      <p style="font-size:12px;color:var(--text-tertiary);padding:20px;text-align:center;background:var(--surface-alt);border-radius:8px;border:1px dashed var(--border)">📋 Анкеты заполняются через Telegram-бота.<br>Здесь можно просматривать и редактировать.</p>
+    </div>
+
+    <div id="tabStats">
+      <div id="quickStats"></div>
+    </div>
+
+    <div id="tabImport" class="hidden">
+      <h2 style="font-size:14px;display:flex;align-items:center;gap:6px">📥 Импорт</h2>
+      <p style="font-size:12px;color:var(--text-secondary);margin-bottom:12px">Данные поступают из Telegram-бота. CSV-импорт — резервный канал.</p>
+      <button class="btn-outline" style="width:100%;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px" onclick="downloadTemplate()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Скачать шаблон CSV</button>
+      <div class="import-area" onclick="document.getElementById('csvFile').click()">
+        <div class="icon">📄</div><p style="font-weight:500">Выберите CSV-файл</p><p style="font-size:11px;color:var(--text-tertiary)">или нажмите, чтобы выбрать</p>
+        <input type="file" id="csvFile" accept=".csv" onchange="importCSV(event)">
+      </div>
+      <div id="importResult" style="margin-top:12px;font-size:13px"></div>
+    </div>
+  </div>
+
+  <!-- People list -->
+  <div class="card">
+    <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px 0">
+      <div style="font-size:13px;font-weight:600;color:#0f1825">🎯 Компас</div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span style="font-size:16px;cursor:pointer;opacity:.6;transition:opacity .2s" onclick="shareLink()" title="Скопировать ссылку">📤</span>
+        <div style="position:relative;cursor:pointer" onclick="showNotifications()">
+          <span style="font-size:18px">🔔</span>
+          <span id="notifBadge" style="display:none;position:absolute;top:-4px;right:-6px;background:#dc2626;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:8px;min-width:16px;text-align:center;line-height:1.4"></span>
+        </div>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchView('list',this)">📋 Список</button>
+      <button class="tab" onclick="switchView('radar',this)">🎯 Радар</button>
+      <button class="tab" onclick="switchView('graph',this)">🌐 Граф</button>
+      <button class="tab" onclick="switchView('projects',this)">📋 Проекты</button>
+      <button class="tab" onclick="switchView('board',this)">🤝 Предложения</button>
+      <button class="tab" onclick="switchView('dealrooms',this)">💼 Сделки</button>
+      <button class="tab" onclick="switchView('projectrooms',this)">📁 Проектные</button>
+      <button class="tab" onclick="switchView('deals',this)">💰 Воронка</button>
+      <button class="tab" onclick="switchView('dashboard',this)">📊 Дашборд</button>
+      <button class="tab" onclick="switchView('ai',this)">🤖 AI</button>
+      <button class="tab" onclick="switchView('strategy',this)">🧭 Стратегия</button>
+      <button class="tab" onclick="switchView('sync',this)">🔄 Синхр.</button>
+    </div>
+
+    <div id="viewList">
+      <h2>Все люди</h2>
+      <div class="search-bar"><input id="searchInput" placeholder="Поиск..." oninput="renderPeople()"></div>
+      <div id="peopleTableWrap" style="max-height:420px;overflow-y:auto">
+        <table><thead><tr><th></th><th>Имя</th><th>Компания</th><th>Зона</th><th style="text-align:center">Рейтинг</th><th></th></tr></thead><tbody id="peopleList"></tbody></table>
+      </div>
+      <p style="font-size:12px;color:#999;margin-top:8px" id="totalCount"></p>
+    </div>
+
+    <div id="viewRadar" class="hidden">
+      <h2>🎯 Радар распределения</h2>
+      <p style="font-size:13px;color:#666;margin-bottom:12px">Люди по зонам отношений</p>
+      <div id="radarVisual"></div>
+    </div>
+
+    <div id="viewGraph" class="hidden">
+      <h2>🌐 Граф связей</h2>
+      <p style="font-size:13px;color:#666;margin-bottom:8px">Кликни на человека — увидишь детали. Включи «Связи» и кликни на двух людей, чтобы соединить их.</p>
+      <div class="graph-controls" style="flex-wrap:wrap">
+        <span style="font-size:12px;color:#999;font-weight:600">Фильтр зон:</span>
+        <button class="mode-btn active" data-zone="all" onclick="setGraphFilter('all',this)">Все</button>
+        <button class="mode-btn" data-zone="0" onclick="setGraphFilter(0,this)" style="border-color:#9b59b6;color:#9b59b6">А</button>
+        <button class="mode-btn" data-zone="1" onclick="setGraphFilter(1,this)" style="border-color:#3498db;color:#3498db">Б</button>
+        <button class="mode-btn" data-zone="2" onclick="setGraphFilter(2,this)" style="border-color:#2ecc71;color:#2ecc71">В</button>
+        <button class="mode-btn" data-zone="3" onclick="setGraphFilter(3,this)" style="border-color:#e67e22;color:#e67e22">Г</button>
+        <button class="mode-btn" data-zone="4" onclick="setGraphFilter(4,this)" style="border-color:#f1c40f;color:#f1c40f">Д</button>
+        <button class="mode-btn" data-zone="5" onclick="setGraphFilter(5,this)" style="border-color:#95a5a6;color:#95a5a6">Е</button>
+        <span style="width:1px;height:20px;background:#ddd;margin:0 4px"></span>
+        <button class="mode-btn" id="graphModeConnect" onclick="toggleGraphMode('connect')">🔗 Связи</button>
+        <button class="mode-btn" id="graphModeRemove" onclick="toggleGraphMode('remove')">✂️ Удалить связь</button>
+        <span style="font-size:12px;color:#999;margin-left:8px" id="graphStatus"></span>
+      </div>
+      <div class="graph-wrap" id="graphWrap">
+        <svg id="graphSvg"></svg>
+        <div class="graph-tip" id="graphTip"></div>
+      </div>
+      <div id="matchesSection" style="margin-top:16px"></div>
+    </div>
+
+    <div id="viewProjects" class="hidden">
+      <h2>📋 Пайплайн проектов</h2>
+      <div class="form-row" style="margin-bottom:16px">
+        <div class="form-row-inline">
+          <div class="form-row"><label>Название проекта</label><input id="fpName" placeholder="ЖК Заповедный"></div>
+          <div class="form-row"><label>Стадия</label><select id="fpStage"><option value="idea">💡 Идея</option><option value="start">🚀 Старт</option><option value="build" selected>🏗️ Стройка</option><option value="done">✅ Завершён</option><option value="frozen">❄️ Заморожен</option></select></div>
+        </div>
+        <div class="form-row-inline">
+          <div class="form-row"><label>Бюджет</label><input id="fpBudget" placeholder="2.5 млрд"></div>
+          <div class="form-row"><label>Площадь</label><input id="fpArea" placeholder="45 000 м²"></div>
+        </div>
+        <div class="form-row-inline">
+          <div class="form-row"><label>Тип объекта</label><select id="fpType"><option value="">— выберите —</option><option>Жилая недвижимость</option><option>Коммерческая недвижимость</option><option>Промышленный объект</option><option>Инфраструктура</option><option>Благоустройство</option><option>ИЖС / Коттеджный посёлок</option><option>Реновация / Реставрация</option></select></div>
+          <div class="form-row"><label>Локация</label><input id="fpLocation" placeholder="Московская обл."></div>
+        </div>
+        <div class="form-row-inline">
+          <div class="form-row"><label>Начало</label><input id="fpStart" type="month" placeholder="2025-06"></div>
+          <div class="form-row"><label>Окончание</label><input id="fpEnd" type="month" placeholder="2027-12"></div>
+        </div>
+        <div class="form-row"><label>Описание</label><textarea id="fpDesc" placeholder="Краткое описание проекта..." style="resize:vertical;min-height:50px"></textarea></div>
+        <div class="form-row"><label>Участники проекта (кликни, чтобы добавить/убрать)</label><div id="fpPeople" style="display:flex;flex-wrap:wrap;gap:4px;min-height:24px"></div></div>
+        <input type="hidden" id="fpEditId">
+        <button class="btn-primary" onclick="saveProject()">➕ Добавить проект</button>
+        <button class="btn-secondary" style="width:100%;margin-top:4px;display:none" id="cancelProjectEdit" onclick="cancelProjectEdit()">✕ Отменить</button>
+      </div>
+      <div id="projectsList"></div>
+    </div>
+
+    <div id="viewBoard" class="hidden">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h2>🤝 Доска предложений</h2>
+        <button class="btn-outline" onclick="showBoardForm()">➕ Разместить</button>
+      </div>
+      <div id="boardFilter" style="display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap">
+        <button class="tab" style="flex:0;padding:5px 12px" onclick="setBoardFilter('all',this)">Все</button>
+        <button class="tab" style="flex:0;padding:5px 12px" onclick="setBoardFilter('ищу',this)">🟢 Ищу</button>
+        <button class="tab" style="flex:0;padding:5px 12px" onclick="setBoardFilter('предлагаю',this)">🔴 Предлагаю</button>
+      </div>
+      <div id="boardList"></div>
+    </div>
+
+    <div id="viewDealrooms" class="hidden">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h2>💼 Комнаты сделок</h2>
+      </div>
+      <div id="dealRoomFilter" style="display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap">
+        <button class="tab" style="flex:0;padding:5px 12px" onclick="setDealRoomFilter('all',this)">Все</button>
+        <button class="tab" style="flex:0;padding:5px 12px" onclick="setDealRoomFilter('negotiation',this)">💬 Переговоры</button>
+        <button class="tab" style="flex:0;padding:5px 12px" onclick="setDealRoomFilter('confirmation',this)">📝 Согласование</button>
+        <button class="tab" style="flex:0;padding:5px 12px" onclick="setDealRoomFilter('closed',this)">✅ Закрыто</button>
+      </div>
+      <div id="dealRoomList"></div>
+    </div>
+
+    <div id="viewProjectrooms" class="hidden">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h2>📁 Проектные комнаты</h2>
+      </div>
+      <div id="projectRoomFilter" style="display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap">
+        <button class="tab" style="flex:0;padding:5px 12px" onclick="setProjectRoomFilter('all',this)">Все</button>
+        <button class="tab" style="flex:0;padding:5px 12px" onclick="setProjectRoomFilter('active',this)">🟢 Активные</button>
+        <button class="tab" style="flex:0;padding:5px 12px" onclick="setProjectRoomFilter('completed',this)">✅ Завершённые</button>
+      </div>
+      <div id="projectRoomList"></div>
+    </div>
+
+    <div id="viewDeals" class="hidden">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h2>💰 Воронка сделок</h2>
+        <button class="btn-outline" onclick="showDealForm()">➕ Новая сделка</button>
+      </div>
+      <div id="kanbanBoard" class="kb-wrap"></div>
+    </div>
+
+    <div id="viewDashboard" class="hidden">
+      <h2>📊 Дашборд руководителя</h2>
+      <div class="db-grid" id="dbSummary"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="card db-section">
+          <h3>🎯 Распределение по зонам</h3>
+          <div class="db-chart" id="dbZoneChart"></div>
+        </div>
+        <div class="card db-section">
+          <h3>📈 Касания по месяцам</h3>
+          <div class="db-chart" id="dbTouchChart"></div>
+        </div>
+        <div class="card db-section">
+          <h3>🔁 Воронка конверсии</h3>
+          <div class="db-funnel" id="dbFunnel"></div>
+        </div>
+        <div class="card db-section">
+          <h3>⏱ Последние активности</h3>
+          <div id="dbActivity"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="viewAi" class="hidden">
+      <h2>🤖 AI-дайджест</h2>
+      <p style="font-size:13px;color:#666;margin-bottom:16px">Аналитика и рекомендации на основе текущих данных</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="card db-section">
+          <h3>⏰ Просроченные follow-up</h3>
+          <div id="aiOverdue"></div>
+        </div>
+        <div class="card db-section">
+          <h3>🔥 Горячие точки</h3>
+          <div id="aiHotspots"></div>
+        </div>
+        <div class="card db-section" style="grid-column:1/-1">
+          <h3>📋 Рекомендации на сегодня</h3>
+          <div id="aiRecommendations"></div>
+        </div>
+        <div class="card db-section" style="grid-column:1/-1">
+          <h3>📈 Тренды за неделю</h3>
+          <div id="aiTrends"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="viewSync" class="hidden">
+      <h2>🔄 Синхронизация с Onto</h2>
+      <p style="font-size:13px;color:#666;margin-bottom:16px">Перенос данных между приложением и графовой базой</p>
+      <div class="sync-bar">
+        <button class="btn-outline" onclick="prepExportToOnto()">📤 Экспорт в Onto</button>
+        <button class="btn-outline" onclick="prepImportFromOnto()">📥 Импорт из Onto</button>
+      </div>
+      <div id="syncBlock"></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Стратегия НАРСО -->
+<div id="viewStrategy" class="hidden">
+  <h2>🧭 Стратегия НАРСО</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div class="card db-section" style="grid-column:1/-1">
+      <h3>📜 Манифест</h3>
+      <div style="font-size:13px;line-height:1.6;color:#333;padding:16px;background:#f8f9fa;border-radius:8px">
+        <p><strong>НАРСО</strong> — Национальная Ассоциация Развития Строительной Отрасли.</p>
+        <p style="margin-top:8px"><strong>Принцип участия:</strong> «Платим за пользу, а не за членство». Участник получает ценность от совместных проектов, партнёрств и экспертизы. Ассоциация зарабатывает комиссию с успешных сделок и проектов.</p>
+        <p style="margin-top:8px"><strong>Два контура:</strong></p>
+        <ul style="margin-left:20px;margin-top:4px">
+          <li><strong>Внутренний</strong> — для участников: совместные проекты, мэтчинг, обмен компетенциями</li>
+          <li><strong>Внешний</strong> — для партнёров и рынка: публичные проекты, инвестиции, заказчики</li>
+        </ul>
+        <p style="margin-top:8px"><strong>Миссия:</strong> Территориальное развитие России через объединение лучших игроков стройки — от девелоперов до технологических стартапов.</p>
+        <p style="margin-top:8px"><strong>Ценности:</strong> Прозрачность, Взаимопомощь, Качество, Инновации, Развитие территорий.</p>
+      </div>
+    </div>
+
+    <div class="card db-section">
+      <h3>🌐 Внешние проекты</h3>
+      <p style="font-size:12px;color:#666;margin-bottom:12px">Проекты, доступные для внешних партнёров и инвесторов</p>
+      <div id="extProjectsList">
+        <p style="font-size:13px;color:#999;padding:12px;text-align:center">Пока нет внешних проектов.<br>Нажмите «Сделать внешним» на странице проекта.</p>
+      </div>
+    </div>
+
+    <div class="card db-section">
+      <h3>💰 Экономика Ассоциации</h3>
+      <div id="economyBoard">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+          <div style="background:#f8f9fa;border-radius:8px;padding:12px;text-align:center">
+            <div style="font-size:24px;font-weight:700;color:#1a1a2e" id="ecoTotalValue">0</div>
+            <div style="font-size:11px;color:#666">Общая стоимость проектов</div>
+          </div>
+          <div style="background:#f8f9fa;border-radius:8px;padding:12px;text-align:center">
+            <div style="font-size:24px;font-weight:700;color:#059669" id="ecoCommission">0</div>
+            <div style="font-size:11px;color:#666">Комиссия НАРСО (3%)</div>
+          </div>
+          <div style="background:#f8f9fa;border-radius:8px;padding:12px;text-align:center">
+            <div style="font-size:24px;font-weight:700;color:#2563eb" id="ecoDealsCount">0</div>
+            <div style="font-size:11px;color:#666">Завершённых сделок</div>
+          </div>
+          <div style="background:#f8f9fa;border-radius:8px;padding:12px;text-align:center">
+            <div style="font-size:24px;font-weight:700;color:#8b5cf6" id="ecoActiveProjects">0</div>
+            <div style="font-size:11px;color:#666">Активных проектов</div>
+          </div>
+        </div>
+        <h4 style="font-size:12px;color:#999;text-transform:uppercase;margin:12px 0 8px">📊 Распределение по типам участников</h4>
+        <div id="ecoTypeChart"></div>
+      </div>
+    </div>
+
+    <div class="card db-section" style="grid-column:1/-1">
+      <h3>🧭 Дорожная карта</h3>
+      <div style="display:flex;gap:12px;overflow-x:auto;padding:8px 0">
+        <div style="min-width:160px;background:#f0e6f6;border-radius:10px;padding:14px;border-top:3px solid #9b59b6">
+          <div style="font-size:11px;color:#8e44ad;font-weight:600">📍 Сейчас</div>
+          <div style="font-size:13px;font-weight:600;margin:6px 0">Запуск НАРСО</div>
+          <div style="font-size:11px;color:#666">Сбор участников, цифровая платформа, первые проекты</div>
+        </div>
+        <div style="min-width:160px;background:#dbeafe;border-radius:10px;padding:14px;border-top:3px solid #3498db">
+          <div style="font-size:11px;color:#2563eb;font-weight:600">🎯 Q3 2026</div>
+          <div style="font-size:13px;font-weight:600;margin:6px 0">Внутренние проекты</div>
+          <div style="font-size:11px;color:#666">5+ совместных проектов, мэтчинг, оборот внутри ассоциации</div>
+        </div>
+        <div style="min-width:160px;background:#d1fae5;border-radius:10px;padding:14px;border-top:3px solid #2ecc71">
+          <div style="font-size:11px;color:#059669;font-weight:600">🎯 Q4 2026</div>
+          <div style="font-size:13px;font-weight:600;margin:6px 0">Внешний контур</div>
+          <div style="font-size:11px;color:#666">Публичные проекты, инвестиции, партнёры, первые комиссии</div>
+        </div>
+        <div style="min-width:160px;background:#fff3e0;border-radius:10px;padding:14px;border-top:3px solid #e67e22">
+          <div style="font-size:11px;color:#d97706;font-weight:600">🎯 2027</div>
+          <div style="font-size:13px;font-weight:600;margin:6px 0">Масштабирование</div>
+          <div style="font-size:11px;color:#666">50+ участников, территориальное развитие, международные проекты</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="modal-overlay" id="detailModal" onclick="if(event.target===this)closeDetail()">
+  <div class="modal-card" id="detailContent"></div>
+</div>
+
+<script>
+const ZONES = [
+  { k:'a', name:'А: Наставники и покровители', color:'#9b59b6', desc:'Близкие, превосходят' },
+  { k:'b', name:'Б: Соратники', color:'#3498db', desc:'Близкие, равные' },
+  { k:'c', name:'В: Последователи', color:'#2ecc71', desc:'Близкие, уступают' },
+  { k:'d', name:'Г: Боссы и гуру', color:'#e67e22', desc:'Дальние, превосходят' },
+  { k:'e', name:'Д: Коллеги и партнёры', color:'#f1c40f', desc:'Дальние, равные' },
+  { k:'f', name:'Е: Подчинённые и команда', color:'#95a5a6', desc:'Дальние, уступают' }
+];
+
+const TAXONOMY = [
+  {
+    "group": "Роль в проекте",
+    "tags": [
+      "Девелопер / Застройщик",
+      "Архитектор",
+      "Генпроектировщик",
+      "Инженер-проектировщик",
+      "Генподрядчик / СМР",
+      "Спецподрядчик (отделка, фасад, кровля...)",
+      "Технический заказчик",
+      "Строительный контроль / Технадзор",
+      "Производитель стройматериалов",
+      "Поставщик стройматериалов / оборудования",
+      "Риелтор / Брокер",
+      "Управляющий недвижимостью",
+      "Дизайнер интерьера",
+      "Дизайнер среды",
+      "Ландшафтный архитектор",
+      "Урбанист",
+      "Оценщик / Эксперт",
+      "Сметчик / Нормировщик",
+      "Логист"
+    ]
+  },
+  {
+    "group": "Специализация",
+    "tags": [
+      "Жилая недвижимость",
+      "ИЖС",
+      "Малоэтажное строительство",
+      "Коммерческая недвижимость",
+      "Промышленное строительство",
+      "Инфраструктурное строительство",
+      "Благоустройство территорий",
+      "Реновация / Реставрация",
+      "Дороги / Транспортное строительство",
+      "Энергетика / Инженерные сети",
+      "Территориальное развитие"
+    ]
+  },
+  {
+    "group": "Экспертиза и услуги",
+    "tags": [
+      "Управление проектами",
+      "Процессное управление",
+      "Стратегия",
+      "Финансы / Инвестиции",
+      "Маркетинг / PR",
+      "HR / Кадры",
+      "Юридическое сопровождение",
+      "GR / Работа с госорганами",
+      "Обучение / Образование",
+      "Консалтинг / Экспертиза",
+      "Модерация / Фасилитация",
+      "Кибернетика",
+      "Охрана труда / ПБ",
+      "Цифровая трансформация",
+      "Методология"
+    ]
+  },
+  {
+    "group": "Ресурсы",
+    "tags": [
+      "Стройматериалы (производство)",
+      "Стройматериалы (поставка)",
+      "Трудовые ресурсы / Аутстаффинг",
+      "Земельные участки",
+      "Оборудование / Строительная техника",
+      "Логистика / Перевозки",
+      "Инвестиции / Капитал"
+    ]
+  },
+  {
+    "group": "Технологии",
+    "tags": [
+      "BIM / ТИМ",
+      "Графовые базы данных",
+      "MCP / AI интеграции",
+      "LLM-агенты",
+      "Цифровые двойники",
+      "IoT / Умные здания",
+      "Геоинформационные системы (ГИС)",
+      "ИИ / Нейросети",
+      "Цифровые платформы"
+    ]
+  },
+  {
+    "group": "Проекты / Инициативы",
+    "tags": [
+      "Конкурсное движение",
+      "Города будущего",
+      "Развитие сообществ",
+      "Экосистемы",
+      "Кадровый лифт",
+      "Стартапы / Инновации",
+      "Экспорт / Международные проекты",
+      "Госпрограммы / Фонды",
+      "Туристическая инфраструктура",
+      "Модульное строительство"
+    ]
+  }
+];
+
+let DATA = []; let CONNECTIONS = []; let PROJECTS = []; let DEALS = []; let BOARD_ITEMS = []; let DEAL_ROOMS = []; let PROJECT_ROOMS = []; let NOTIFICATIONS = []; idCounter = 1; let projIdCounter = 1; let dealIdCounter = 1; let boardIdCounter = 1; let dealRoomIdCounter = 1; let projectRoomIdCounter = 1; let notifIdCounter = 1; let boardFilter = 'all'; let dealRoomFilter = 'all'; let projectRoomFilter = 'all';
+let graphMode = null; let graphPending = null; let graphZoneFilter = [];
+const DEAL_STATUSES = [
+  { id:'lead', label:'📋 Лид', color:'#f1f5f9', border:'#cbd5e1' },
+  { id:'negotiation', label:'💬 Переговоры', color:'#dbeafe', border:'#93c5fd' },
+  { id:'agreement', label:'🤝 Договорённость', color:'#fef9c3', border:'#fde047' },
+  { id:'contract', label:'📄 Контракт', color:'#d1fae5', border:'#6ee7b7' },
+  { id:'implementation', label:'🏗️ Реализация', color:'#f0e6f6', border:'#c4b5fd' },
+  { id:'closed', label:'✅ Закрыто', color:'#f3f4f6', border:'#d1d5db' }
+];
+
+const DEFAULT_DATA = [
+  {"name": "Magic Wood", "company": "ООО «Мэджик Вуд Строй»", "position": "Девелопер / Застройщик", "phone": "8 (495) 777-22-67", "email": "info@magicwood.ru", "note": "✅ Чёткий бренд, высокая маржинальность | ⚠️ Нет публичных цен | 🤝 Флагман премиум-сегмента Ассоциации | ООО «Мэджик Вуд Строй» | Тел: 8 (495) 777-22-67 | Email: info@magicwood.ru | Сайт: https://magicwood.ru | Адрес: г. Москва, Верейская ул., 29 стр. 33 | Стаж: 19 лет", "assets": [9, 7, 8, 8], "liabilities": [4, 6], "competencies": "ИИ / Нейросети", "requests": "ИИ / Нейросети", "photo": "", "logo": "", "messenger": "", "type": "домостроение", "synergy": "Флагман премиум-сегмента Ассоциации", "strength": "Чёткий бренд, высокая маржинальность", "weakness": "Нет публичных цен"},
+  {"name": "VETVIHOME", "company": "VETVIHOME (группа компаний)", "position": "Девелопер / Застройщик", "phone": "+7 (903) 322-79-19", "email": "booking@vetvi-home.ru", "note": "✅ Модель «строй + управляй» + проект на 10 млрд ₽ | ⚠️ Молодой бренд | 🤝 Флагманский туристический проект НАРСО | VETVIHOME (группа компаний) | Тел: +7 (903) 322-79-19 | Email: booking@vetvi-home.ru | Сайт: https://vetvihome-studio.ru | Стаж: 3 лет", "assets": [6, 6, 8, 6], "liabilities": [4, 6], "competencies": "Девелопер / Застройщик", "requests": "Управление проектами", "photo": "", "logo": "", "messenger": "", "type": "домостроение", "synergy": "Флагманский туристический проект НАРСО", "strength": "Модель «строй + управляй» + проект на 10 млрд ₽", "weakness": "Молодой бренд"},
+  {"name": "WoodFrame", "company": "ООО «Мари-Арт» (WoodFrame)", "position": "Девелопер / Застройщик", "phone": "+7 (495) 979-53-19", "email": "w00dframe@yandex.ru", "note": "✅ ЭСКРОУ-счета + своё производство + прозрачность | ⚠️ Только МО, 5-6 домов/год | 🤝 Надёжный подрядчик по каркасному домостроению | ООО «Мари-Арт» (WoodFrame) | Тел: +7 (495) 979-53-19 | Email: w00dframe@yandex.ru | Сайт: https://woodframe.ru | Адрес: Московская область, г. Подольск, ул. Бронницкая, д. 1 | Стаж: 13 лет", "assets": [10, 8, 8, 9], "liabilities": [5, 5], "competencies": "Генподрядчик / СМР, Малоэтажное строительство, Производитель стройматериалов", "requests": "Генподрядчик / СМР, Малоэтажное строительство", "photo": "", "logo": "", "messenger": "", "type": "домостроение", "synergy": "Надёжный подрядчик по каркасному домостроению", "strength": "ЭСКРОУ-счета + своё производство + прозрачность", "weakness": "Только МО, 5-6 домов/год"},
+  {"name": "ДОБРОМИР", "company": "ООО «Добромир и К» (СК Добромир)", "position": "Девелопер / Застройщик", "phone": "+7 (473) 229-22-82", "email": "zbs36@mail.ru, elena.ramskaya@mail.ru", "note": "✅ Энергоэффективность А++ + скорость 60 дней + фиксированная цена | ⚠️ Только типовые проекты, слабое digital | 🤝 Технологический кейс энергоэффективности, партнёр WoodFrame | ООО «Добромир и К» (СК Добромир) | Тел: +7 (473) 229-22-82 | Email: zbs36@mail.ru, elena.ramskaya@mail.ru | Сайт: https://добромир36.рф | Адрес: г. Воронеж, ул. Торпедо, д. 45а | Стаж: 10 лет", "assets": [9, 8, 8, 9], "liabilities": [4, 6], "competencies": "Энергетика / Инженерные сети", "requests": "Энергетика / Инженерные сети", "photo": "", "logo": "", "messenger": "", "type": "домостроение", "synergy": "Технологический кейс энергоэффективности, партнёр WoodFrame", "strength": "Энергоэффективность А++ + скорость 60 дней + фиксированная цена", "weakness": "Только типовые проекты, слабое digital"},
+  {"name": "Идеальные процессы", "company": "ООО «Идеальные процессы»", "position": "Управление проектами", "phone": "+7 (495) 142-7000", "email": "", "note": "✅ Цифровой двойник управления | ⚠️ Нет публичных кейсов | 🤝 Управляющее ядро Ассоциации | ООО «Идеальные процессы» | Тел: +7 (495) 142-7000 | Сайт: https://ideal-process.ru | Адрес: 141983, Московская обл., г. Дубна, ул. Октябрьская, д. 21 (юр.) | Стаж: 0 лет", "assets": [7, 6, 8, 6], "liabilities": [4, 5], "competencies": "Цифровые двойники, ИИ / Нейросети", "requests": "ИИ / Нейросети", "photo": "", "logo": "", "messenger": "", "type": "управление", "synergy": "Управляющее ядро Ассоциации", "strength": "Цифровой двойник управления", "weakness": "Нет публичных кейсов"},
+  {"name": "Куб Дом", "company": "ИП Кублицкая Л.Е. (КУБРДОМ)", "position": "Девелопер / Застройщик", "phone": "+7 (993) 259-93-31", "email": "kubrdom@yandex.ru", "note": "✅ Уникальная ниша (дома из морских контейнеров) | ⚠️ ИП (не ООО) | 🤝 Модульные дома для глэмпингов VETVIHOME | ИП Кублицкая Л.Е. (КУБРДОМ) | Тел: +7 (993) 259-93-31 | Email: kubrdom@yandex.ru | Сайт: http://kubrdom.ru | Адрес: г. Москва, м. Битца, ТК «Южная Бухта» | Стаж: 2 лет", "assets": [6, 7, 8, 6], "liabilities": [4, 4], "competencies": "Малоэтажное строительство", "requests": "Малоэтажное строительство", "photo": "", "logo": "", "messenger": "", "type": "домостроение", "synergy": "Модульные дома для глэмпингов VETVIHOME", "strength": "Уникальная ниша (дома из морских контейнеров)", "weakness": "ИП (не ООО)"},
+  {"name": "Мир Климата", "company": "Мир Климата (торговая компания, Подольск)", "position": "Генподрядчик / СМР", "phone": "+7 (499) 704-01-07", "email": "", "note": "✅ 15+ лет опыта, официальный дилер ведущих брендов | ⚠️ Нет сайта, локальный (Подольск) | 🤝 Климат/вентиляция для объектов участников, синергия с СКГАЗ | Мир Климата (торговая компания, Подольск) | Тел: +7 (499) 704-01-07 | Адрес: Московская обл., г. Подольск, мкр-н Климовск, ул. Молодёжная, 10 | Стаж: 15 лет", "assets": [9, 8, 6, 7], "liabilities": [6, 9], "competencies": "Инженер-проектировщик, Генподрядчик / СМР, Энергетика / Инженерные сети", "requests": "Инженер-проектировщик, Генподрядчик / СМР, Энергетика / Инженерные сети", "photo": "", "logo": "", "messenger": "", "type": "инженерный_подрядчик", "synergy": "Климат/вентиляция для объектов участников, синергия с СКГАЗ", "strength": "15+ лет опыта, официальный дилер ведущих брендов", "weakness": "Нет сайта, локальный (Подольск)"},
+  {"name": "Михаил Федоренко", "company": "Федоренко Михаил Владимирович", "position": "Стратегия", "phone": "", "email": "", "note": "✅ Госдоступ (ФАС, Росреестр, МО) + Сбер + образование | ⚠️ Широкий профиль, не стройка напрямую | 🤝 Стратегическое лидерство, лоббизм, методология для Кибермозга | Федоренко Михаил Владимирович | Сайт: https://mvfedorenko.com", "assets": [7, 7, 8, 7], "liabilities": [5, 6], "competencies": "Стратегия, GR / Работа с госорганами, Образование / Кадры", "requests": "Стратегия, GR / Работа с госорганами", "photo": "", "logo": "", "messenger": "", "type": "соучредитель", "synergy": "Стратегическое лидерство, лоббизм, методология для Кибермозга", "strength": "Госдоступ (ФАС, Росреестр, МО) + Сбер + образование", "weakness": "Широкий профиль, не стройка напрямую"},
+  {"name": "Новая Земля", "company": "ООО «Новая Земля»", "position": "Девелопер / Застройщик", "phone": "+7 (495) 127-34-03", "email": "sale@n-land.ru", "note": "✅ Масштаб и лучшее digital-присутствие | ⚠️ Юрлицо неоднозначно | 🤝 Полигон внедрения технологий участников | ООО «Новая Земля» | Тел: +7 (495) 127-34-03 | Email: sale@n-land.ru | Сайт: https://n-land.ru | Адрес: г. Москва, ул. Ленинская Слобода, д. 19, БЦ «Омега Плаза» | Стаж: 16 лет", "assets": [9, 7, 8, 8], "liabilities": [4, 6], "competencies": "Девелопер / Застройщик", "requests": "Девелопер / Застройщик", "photo": "", "logo": "", "messenger": "", "type": "девелопер", "synergy": "Полигон внедрения технологий участников", "strength": "Масштаб и лучшее digital-присутствие", "weakness": "Юрлицо неоднозначно"},
+  {"name": "ПАТРИКИ 20", "company": "Архитектурное бюро «ПАТРИКИ 20» (АРХИ-Бутик)", "position": "Архитектор", "phone": "+7 (906) 803-83-44", "email": "patriki20@yandex.ru", "note": "✅ Новая русская эстетика + международные проекты | ⚠️ Юрнепрозрачность | 🤝 Архитектурные концепции для девелоперов НАРСО | Архитектурное бюро «ПАТРИКИ 20» (АРХИ-Бутик) | Тел: +7 (906) 803-83-44 | Email: patriki20@yandex.ru | Сайт: https://patriki20.ru | Стаж: 15 лет", "assets": [10, 8, 8, 8], "liabilities": [6, 6], "competencies": "Девелопер / Застройщик, Архитектор, ИИ / Нейросети", "requests": "Девелопер / Застройщик, Архитектор, ИИ / Нейросети", "photo": "", "logo": "", "messenger": "", "type": "архитектура", "synergy": "Архитектурные концепции для девелоперов НАРСО", "strength": "Новая русская эстетика + международные проекты", "weakness": "Юрнепрозрачность"},
+  {"name": "Плеяда", "company": "ООО «Плеяда»", "position": "Генподрядчик / СМР", "phone": "8 (917) 578-78-90", "email": "stankipleyada@yandex.ru", "note": "✅ Адрес совпадает с НАРСО (Пресненская наб., 12) | ⚠️ B2B-ниша неочевидна для строительной ассоциации | 🤝 Поставки станков участникам, логистика, ВЭД-консалтинг | ООО «Плеяда» | Тел: 8 (917) 578-78-90 | Email: stankipleyada@yandex.ru | Сайт: https://pleyada.pro | Адрес: 123112, г. Москва, Пресненская наб., д. 12, помещ. 3/44 | Стаж: 14 лет", "assets": [10, 8, 8, 8], "liabilities": [7, 6], "competencies": "Инженер-проектировщик, Генподрядчик / СМР, Консалтинг / Экспертиза, Переезд / Логистика", "requests": "Инженер-проектировщик, Генподрядчик / СМР, Консалтинг / Экспертиза, ИИ / Нейросети, Переезд / Логистика", "photo": "", "logo": "", "messenger": "", "type": "инженерный_подрядчик", "synergy": "Поставки станков участникам, логистика, ВЭД-консалтинг", "strength": "Адрес совпадает с НАРСО (Пресненская наб., 12)", "weakness": "B2B-ниша неочевидна для строительной ассоциации"},
+  {"name": "СКГАЗ", "company": "ООО «СКГАЗ»", "position": "Генподрядчик / СМР", "phone": "+7 (495) 649-69-37", "email": "info@ck-gaz.ru", "note": "✅ Собственные ТМ (Kadatec, Mezler) + 23 года на рынке | ⚠️ Только Московский регион | 🤝 Газификация и отопление объектов всех участников | ООО «СКГАЗ» | Тел: +7 (495) 649-69-37 | Email: info@ck-gaz.ru | Сайт: https://ck-gaz.ru | Адрес: 129347, Москва, Ярославское ш., д. 124 | Стаж: 23 лет", "assets": [10, 8, 8, 9], "liabilities": [6, 5], "competencies": "Инженер-проектировщик, Генподрядчик / СМР, Энергетика / Инженерные сети", "requests": "Инженер-проектировщик, Генподрядчик / СМР, Энергетика / Инженерные сети", "photo": "", "logo": "", "messenger": "", "type": "инженерный_подрядчик", "synergy": "Газификация и отопление объектов всех участников", "strength": "Собственные ТМ (Kadatec, Mezler) + 23 года на рынке", "weakness": "Только Московский регион"},
+  {"name": "Стройпортал", "company": "Строительный портал (stroyportal.ru)", "position": "Девелопер / Застройщик", "phone": "", "email": "", "note": "✅ Крупнейшая стройплатформа РФ (1,65 млн пос./мес) | ⚠️ Качество контента от продавцов | 🤝 Канал продаж товаров/услуг для всех участников | Строительный портал (stroyportal.ru) | Сайт: https://www.stroyportal.ru | Стаж: 22 лет", "assets": [10, 8, 8, 8], "liabilities": [5, 8], "competencies": "Маркетинг / PR, Управляющая компания", "requests": "Маркетинг / PR, Управляющая компания", "photo": "", "logo": "", "messenger": "", "type": "инфраструктура", "synergy": "Канал продаж товаров/услуг для всех участников", "strength": "Крупнейшая стройплатформа РФ (1,65 млн пос./мес)", "weakness": "Качество контента от продавцов"},
+  {"name": "ТЭСЛА Стройпроект", "company": "ООО Компания Тесла-стройпроект", "position": "Генподрядчик / СМР", "phone": "8 (499) 380-80-70", "email": "info@k-tsp.ru", "note": "✅ Портфолио премиум (УД Президента РФ) | ⚠️ Устаревший сайт | 🤝 Электрика нужна каждому строящемуся объекту | ООО Компания Тесла-стройпроект | Тел: 8 (499) 380-80-70 | Email: info@k-tsp.ru | Сайт: https://k-tsp.ru | Адрес: 127055, г. Москва, ул. Образцова, д. 7, офис 109 | Стаж: 21 лет", "assets": [10, 8, 8, 8], "liabilities": [5, 4], "competencies": "Инженер-проектировщик, Генподрядчик / СМР", "requests": "Инженер-проектировщик, Генподрядчик / СМР", "photo": "", "logo": "", "messenger": "", "type": "инженерный_подрядчик", "synergy": "Электрика нужна каждому строящемуся объекту", "strength": "Портфолио премиум (УД Президента РФ)", "weakness": "Устаревший сайт"},
+  {"name": "Усадьбы у озера", "company": "ИП Галеев Ф.Д. (коттеджный посёлок «Усадьба»)", "position": "Девелопер / Застройщик", "phone": "+7 (917) 285-70-95", "email": "", "note": "✅ Работающий бизнес «коттеджный посёлок» | ⚠️ Только Татарстан | 🤝 Модель КП для тиражирования в других регионах | ИП Галеев Ф.Д. (коттеджный посёлок «Усадьба») | Тел: +7 (917) 285-70-95 | Сайт: https://usadba-biektay.ru | Адрес: г. Казань, ул. Ленинградская, 17, офис 306 | Стаж: 15 лет", "assets": [10, 9, 8, 8], "liabilities": [4, 4], "competencies": "Девелопер / Застройщик, Малоэтажное строительство", "requests": "Девелопер / Застройщик", "photo": "", "logo": "", "messenger": "", "type": "девелопер", "synergy": "Модель КП для тиражирования в других регионах", "strength": "Работающий бизнес «коттеджный посёлок»", "weakness": "Только Татарстан"},
+  {"name": "ЦИТП", "company": "ООО «Центральный институт типового проектирования и градостроительства»", "position": "Инженер-проектировщик", "phone": "+7 (495) 727-60-33", "email": "info@citp.group", "note": "✅ PMC-подрядчик + BIM-компетенции | ⚠️ Сайт-полуфабрикат | 🤝 Проектирование и управление проектами для участников | ООО «Центральный институт типового проектирования и градостроительства» | Тел: +7 (495) 727-60-33 | Email: info@citp.group | Сайт: http://citp.group | Адрес: г. Москва, Волоколамское шоссе, 1 стр. 1", "assets": [8, 5, 8, 6], "liabilities": [5, 6], "competencies": "Генпроектировщик, Генподрядчик / СМР, BIM / ТИМ, Управление проектами, ИИ / Нейросети", "requests": "Генпроектировщик, Управление проектами", "photo": "", "logo": "", "messenger": "", "type": "проектный_инжиниринг", "synergy": "Проектирование и управление проектами для участников", "strength": "PMC-подрядчик + BIM-компетенции", "weakness": "Сайт-полуфабрикат"},
+  {"name": "ЦНИИЭП жилища", "company": "АО «ЦНИИЭП жилища»", "position": "Институт / Исследования", "phone": "+7 495 984-54-44", "email": "", "note": "✅ Головной институт СССР, ~50% советского жилья | ⚠️ Возрастная структура кадров | 🤝 Генеральный проектный партнёр Ассоциации | АО «ЦНИИЭП жилища» | Тел: +7 495 984-54-44 | Сайт: https://www.ingil.ru | Адрес: г. Москва, Дмитровское шоссе, д. 9, стр. 3 | Стаж: 76 лет", "assets": [9, 8, 8, 8], "liabilities": [6, 7], "competencies": "ИИ / Нейросети", "requests": "Образование / Кадры, ИИ / Нейросети, Управляющая компания", "photo": "", "logo": "", "messenger": "", "type": "институт", "synergy": "Генеральный проектный партнёр Ассоциации", "strength": "Головной институт СССР, ~50% советского жилья", "weakness": "Возрастная структура кадров"},
+  {"name": "IPM", "company": "Институт проектного менеджмента (IPM)", "position": "Консалтинг / Экспертиза", "phone": "", "email": "", "note": "✅ Первый горизонтальный ЖК с ПФ на 3,7 млрд руб., изменения в ФЗ-214 | ⚠️ Сайт недоступен (402), узкая ниша (только КРТ/МЖК) | 🤝 Сопровождение КРТ, привлечение ПФ, лоббирование интересов НАРСО в МИНСТРОЕ | Институт проектного менеджмента (IPM) | Сайт: https://ipmdv.com", "assets": [6, 6, 8, 6], "liabilities": [4, 8], "competencies": "Девелопер / Застройщик", "requests": "Управление проектами", "photo": "", "logo": "", "messenger": "", "type": "социальный_капитал", "synergy": "Сопровождение КРТ, привлечение ПФ, лоббирование интересов НАРСО в МИНСТРОЕ", "strength": "Первый горизонтальный ЖК с ПФ на 3,7 млрд руб., изменения в ФЗ-214", "weakness": "Сайт недоступен (402), узкая ниша (только КРТ/МЖК)"},
+  {"name": "ЛИ-ЭР", "company": "Ландшафтно-консалтинговая строительная компания «ЛИ-ЭР»", "position": "Консалтинг / Экспертиза", "phone": "+7 (495) 720-62-03", "email": "info@li-er.ru", "note": "✅ Крупные городские парки (Гольяново, Вешняки, Отрадное) + ТВ-статус | ⚠️ Узкая специализация (только ландшафт) | 🤝 Ландшафт для коттеджных посёлков участников, медиа-продвижение НАРСО | Ландшафтно-консалтинговая строительная компания «ЛИ-ЭР» | Тел: +7 (495) 720-62-03 | Email: info@li-er.ru | Сайт: https://www.li-er.com", "assets": [7, 6, 8, 6], "liabilities": [5, 8], "competencies": "Малоэтажное строительство, Ландшафтный архитектор", "requests": "Малоэтажное строительство, Ландшафтный архитектор", "photo": "", "logo": "", "messenger": "", "type": "социальный_капитал", "synergy": "Ландшафт для коттеджных посёлков участников, медиа-продвижение НАРСО", "strength": "Крупные городские парки (Гольяново, Вешняки, Отрадное) + ТВ-статус", "weakness": "Узкая специализация (только ландшафт)"},
+  {"name": "НАИКС", "company": "Национальная ассоциация инженеров-консультантов в строительстве (НАИКС)", "position": "Консалтинг / Экспертиза", "phone": "+7 (495) 771-74-72", "email": "info@nacec.ru", "note": "✅ Соорганизатор Международного строительного чемпионата, выход на госструктуры | ⚠️ Зависимость от бюджетных циклов | 🤝 Федеральное финансирование для регионов-участников, отраслевые мероприятия, ДПО | Национальная ассоциация инженеров-консультантов в строительстве (НАИКС) | Тел: +7 (495) 771-74-72 | Email: info@nacec.ru | Сайт: https://nacec.ru | Адрес: г. Москва, ул. Обручева, д. 30/1 стр. 1", "assets": [7, 6, 8, 6], "liabilities": [5, 8], "competencies": "Ипотека / Финансы, Выставки / Мероприятия, Управляющая компания", "requests": "Ипотека / Финансы, Выставки / Мероприятия", "photo": "", "logo": "", "messenger": "", "type": "социальный_капитал", "synergy": "Федеральное финансирование для регионов-участников, отраслевые мероприятия, ДПО", "strength": "Соорганизатор Международного строительного чемпионата, выход на госструктуры", "weakness": "Зависимость от бюджетных циклов"},
+  {"name": "УСКОРЕНИЕ + МетрКлик", "company": "ГК «УСКОРЕНИЕ» (ACCELERATION) + «МетрКлик»", "position": "Консалтинг / Экспертиза", "phone": "+7 (495) 961-31-12", "email": "", "note": "✅ Технологичный стройконтроль (ИИ, 360°-камеры, ADCM) | ⚠️ Два бренда, фрагментированное позиционирование | 🤝 Цифровой мониторинг всех строек НАРСО, BIM/PMC для ЦИТП, синергия с Кибермозгом | ГК «УСКОРЕНИЕ» (ACCELERATION) + «МетрКлик» | Тел: +7 (495) 961-31-12 | Сайт: https://acceleration.ru, https://metrklik.ru | Адрес: г. Москва, Столярный пер., д. 3, кор. 13", "assets": [8, 6, 8, 6], "liabilities": [5, 8], "competencies": "Строительный контроль / Технадзор, BIM / ТИМ, Управление проектами, ИИ / Нейросети", "requests": "BIM / ТИМ, Управление проектами", "photo": "", "logo": "", "messenger": "", "type": "социальный_капитал", "synergy": "Цифровой мониторинг всех строек НАРСО, BIM/PMC для ЦИТП, синергия с Кибермозгом", "strength": "Технологичный стройконтроль (ИИ, 360°-камеры, ADCM)", "weakness": "Два бренда, фрагментированное позиционирование"},
+];
+
+
+DEFAULT_DATA.forEach(p => { p.photo=''; p.logo=''; p.messenger=''; });
+
+function calcPersonZone(p) {
+  if (!p.assets || !p.liabilities) return 2;
+  const a = p.assets.reduce((s,v)=>s+v,0)/p.assets.length;
+  const l = p.liabilities.reduce((s,v)=>s+v,0)/p.liabilities.length;
+  const d = a - l;
+  if (d>=4) return 0; if (d>=2) return 1; if (d>=0) return 2; if (d>=-2) return 3; if (d>=-4) return 4; return 5;
+}
+
+function loadData() {
+  try {
+    const d = localStorage.getItem('radar_data');
+    if (d) { DATA = JSON.parse(d); }
+    else { DATA = JSON.parse(JSON.stringify(DEFAULT_DATA)); }
+    DATA.forEach((p,i)=>{
+      if (!p.id) p.id = i+1;
+      if (p.zone===undefined) p.zone = calcPersonZone(p);
+      if (!p.created) p.created = new Date().toISOString();
+    });
+    idCounter = Math.max(...DATA.map(p=>p.id||0),0)+1;
+    localStorage.setItem('radar_data', JSON.stringify(DATA));
+  } catch(e) {}
+  try {
+    const c = localStorage.getItem('radar_connections');
+    if (c) CONNECTIONS = JSON.parse(c);
+  } catch(e) {}
+  try {
+    const p = localStorage.getItem('radar_projects');
+    if (p) PROJECTS = JSON.parse(p);
+    projIdCounter = Math.max(...PROJECTS.map(p=>p.id||0),0)+1;
+  } catch(e) {}
+  try {
+    const d = localStorage.getItem('radar_deals');
+    if (d) DEALS = JSON.parse(d);
+    dealIdCounter = Math.max(...DEALS.map(d=>d.id||0),0)+1;
+  } catch(e) {}
+  try {
+    const d = localStorage.getItem('radar_board');
+    if (d) BOARD_ITEMS = JSON.parse(d);
+    boardIdCounter = Math.max(...BOARD_ITEMS.map(b=>b.id||0),0)+1;
+  } catch(e) {}
+  try {
+    const d = localStorage.getItem('radar_dealrooms');
+    if (d) DEAL_ROOMS = JSON.parse(d);
+    dealRoomIdCounter = Math.max(...DEAL_ROOMS.map(r=>r.id||0),0)+1;
+  } catch(e) {}
+  try {
+    const d = localStorage.getItem('radar_projectrooms');
+    if (d) PROJECT_ROOMS = JSON.parse(d);
+    projectRoomIdCounter = Math.max(...PROJECT_ROOMS.map(r=>r.id||0),0)+1;
+  } catch(e) {}
+  try {
+    const n = localStorage.getItem('radar_notifications');
+    if (n) NOTIFICATIONS = JSON.parse(n);
+    notifIdCounter = Math.max(...NOTIFICATIONS.map(x=>x.id||0),0)+1;
+  } catch(e) {}
+  renderAll();
+}
+
+function saveData() { localStorage.setItem('radar_data', JSON.stringify(DATA)); localStorage.setItem('radar_connections', JSON.stringify(CONNECTIONS)); localStorage.setItem('radar_projects', JSON.stringify(PROJECTS)); localStorage.setItem('radar_deals', JSON.stringify(DEALS)); localStorage.setItem('radar_board', JSON.stringify(BOARD_ITEMS)); localStorage.setItem('radar_dealrooms', JSON.stringify(DEAL_ROOMS)); localStorage.setItem('radar_projectrooms', JSON.stringify(PROJECT_ROOMS)); localStorage.setItem('radar_notifications', JSON.stringify(NOTIFICATIONS)); renderAll(); }
+function notify(m,t) { const n=document.getElementById('notification'); n.className='notification '+(t||'success')+' show'; n.textContent=m; setTimeout(()=>n.classList.remove('show'),3000); }
+
+function calcZone() {
+  const a = [...document.querySelectorAll('.asset')].map(e=>+e.value);
+  const l = [...document.querySelectorAll('.liability')].map(e=>+e.value);
+  const avgA = a.reduce((s,v)=>s+v,0)/a.length;
+  const avgL = l.reduce((s,v)=>s+v,0)/l.length;
+  const diff = avgA - avgL;
+  let z;
+  if (diff>=4) z=0; else if (diff>=2) z=1; else if (diff>=0) z=2; else if (diff>=-2) z=3; else if (diff>=-4) z=4; else z=5;
+  const el=document.getElementById('zoneResult');
+  el.textContent='Зона: '+ZONES[z].name;
+  el.style.background=ZONES[z].color+'20'; el.style.color=ZONES[z].color; el.style.border='2px solid '+ZONES[z].color;
+  el.dataset.zone=z;
+  return z;
+}
+
+function resetForm() {
+  document.getElementById('fEditId').value='';
+  ['fName','fCompany','fPosition','fRole','fPhone','fEmail','fPhoto','fLogo','fMessenger','fCompetencies','fRequests','fNote'].forEach(id=>document.getElementById(id).value='');
+  document.querySelectorAll('.asset,.liability').forEach(e=>{ e.value=5; e.nextElementSibling.textContent='5'; });
+  document.getElementById('formTitle').textContent='Новый человек';
+  document.querySelector('.btn-primary').textContent='➕ Сохранить';
+  document.getElementById('cancelEdit').style.display='none';
+  calcZone();
+  renderTagSelectors();
+}
+
+function savePerson() {
+  const name=document.getElementById('fName').value.trim();
+  if (!name) { notify('Введите имя','error'); return; }
+  const editId=document.getElementById('fEditId').value;
+  const p = editId ? DATA.find(x=>x.id==+editId) : {};
+  const isNew = !editId || !p;
+  if (isNew) p = {};
+  p.name=name; p.company=document.getElementById('fCompany').value.trim(); p.position=document.getElementById('fPosition').value.trim();
+  p.role=document.getElementById('fRole').value; p.phone=document.getElementById('fPhone').value.trim(); p.email=document.getElementById('fEmail').value.trim();
+  p.photo=document.getElementById('fPhoto').value.trim(); p.logo=document.getElementById('fLogo').value.trim();
+  p.messenger=document.getElementById('fMessenger').value.trim();
+  p.competencies=document.getElementById('fCompetencies').value.trim();
+  p.requests=document.getElementById('fRequests').value.trim();
+  p.assets=[...document.querySelectorAll('.asset')].map(e=>+e.value);
+  p.liabilities=[...document.querySelectorAll('.liability')].map(e=>+e.value);
+  p.note=document.getElementById('fNote').value.trim();
+  p.zone=+document.getElementById('zoneResult').dataset.zone||calcPersonZone(p);
+  if (isNew) {
+    p.id=idCounter++; p.created=new Date().toISOString(); DATA.push(p);
+    // Auto-onboarding: suggest welcome touch (ИИшница: онбординг через AI-агента)
+    setTimeout(() => {
+      if (confirm('🤖 Добавить приветственное касание для '+name+'?')) {
+        p.touches = p.touches || [];
+        p.touches.push({date:new Date().toISOString().slice(0,10), type:'Встреча', topic:'Знакомство / Онбординг', result:'Первичный контакт', nextStep:'Познакомить с экосистемой НАРСО'});
+        saveData();
+      }
+    }, 100);
+  }
+  resetForm();
+  saveData();
+  notify(isNew ? '✅ '+name+' добавлен' : '✏️ '+name+' обновлён');
+}
+
+function editPerson(id) {
+  showDetail(id);
+}
+
+function cancelEdit() { resetForm(); notify('Редактирование отменено'); }
+
+function deletePerson(id) {
+  const p=DATA.find(x=>x.id===id); if (!p||!confirm('Удалить '+p.name+'?')) return;
+  DATA=DATA.filter(x=>x.id!==id); saveData(); notify('🗑️ '+p.name+' удалён');
+}
+
+function renderPeople() {
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  const f=DATA.filter(p=>p.name.toLowerCase().includes(q));
+  document.getElementById('totalCount').textContent='Всего: '+DATA.length+' · показано: '+f.length;
+  const t=document.getElementById('peopleList');
+  if (!f.length) { t.innerHTML='<tr><td colspan="6" style="color:#999;text-align:center;padding:20px">Никого нет</td></tr>'; return; }
+  t.innerHTML=f.sort((a,b)=>a.name.localeCompare(b.name)).map(p=>{
+    const z=ZONES[p.zone]||ZONES[0];
+    const sc=calcScore(p.id); const sl=getScoreLevel(sc);
+    const avatar=p.photo?'<img src="'+p.photo+'" onerror="this.style.display=\'none\'" style="width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid '+z.color+'30">':'<span style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:'+z.color+'15;font-size:15px">👤</span>';
+    return '<tr style="transition:background .15s;cursor:pointer" onclick="showDetail('+p.id+')" onmouseenter="this.style.background=\'var(--surface-alt)\'" onmouseleave="this.style.background=\'transparent\'"><td class="av-row">'+avatar+'</td><td><a href="#" onclick="event.stopPropagation();showDetail('+p.id+');return false" style="color:var(--text);text-decoration:none;font-weight:600;font-size:13px">'+p.name+'</a>'+(p.role?'<br><span style="font-size:10px;color:var(--text-tertiary)">'+p.role+'</span>':'')+'</td><td style="color:var(--text-secondary);font-size:12px">'+(p.company||'—')+'</td><td><span class="zone-badge '+z.k+'">'+z.k.toUpperCase()+'</span></td><td style="text-align:center;font-size:11px"><span title="'+sl.label+'" style="cursor:default">'+sl.icon+' <strong>'+sc+'</strong></span></td><td style="white-space:nowrap" onclick="event.stopPropagation()"><button class="edit-btn" onclick="editPerson('+p.id+')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg> Править</button> <button class="btn-danger" onclick="deletePerson('+p.id+')" style="padding:4px 8px">✕</button></td></tr>';
+  }).join('');
+}
+
+function renderStats() {
+  const cnts={}; ZONES.forEach(z=>cnts[z.k]=0);
+  DATA.forEach(p=>{ const z=ZONES[p.zone]; if (z) cnts[z.k]++; });
+  // Overdue follow-ups
+  const today = new Date();
+  let overdueCount = 0;
+  DATA.forEach(p => (p.touches||[]).forEach(t => { if (t.nextStep && t.date) { const d=new Date(t.date); if ((today-d)/86400000 > 14) overdueCount++; } }));
+  let banner = '';
+  if (overdueCount > 0) banner = '<div style="grid-column:1/-1;background:linear-gradient(135deg,#fef3c7,#fde68a);border:1px solid #f59e0b;border-radius:10px;padding:10px 16px;font-size:12px;display:flex;align-items:center;gap:8px"><span style="font-size:16px">⏰</span><span><strong style="color:#92400e">'+overdueCount+'</strong><span style="color:#92400e"> просроченных follow-up — </span><a href="#" onclick="switchView(\'ai\',document.querySelectorAll(\'.card .tabs .tab\')[6]);return false" style="color:#2563eb;font-weight:600">посмотреть</a></span></div>';
+  document.getElementById('stats').innerHTML='<div class="stat-card" style="background:#ffffff;border-color:#e5e7eb"><div class="num" style="color:#0f1825">'+DATA.length+'</div><div class="label" style="color:#8895a7">👥 Всего</div></div>'+ZONES.map(z=>{
+    const c = cnts[z.k]||0;
+    return '<div class="stat-card" style="border-color:#e5e7eb;border-top:3px solid '+z.color+'"><div class="num" style="color:'+z.color+'">'+c+'</div><div class="label" style="color:#8895a7">'+z.k.toUpperCase()+'</div></div>';
+  }).join('')+banner;
+}
+
+function renderRadar() {
+  const cnts={}; ZONES.forEach(z=>cnts[z.k]=0);
+  DATA.forEach(p=>{ const z=ZONES[p.zone]; if (z) cnts[z.k]++; });
+  const max=Math.max(...Object.values(cnts),1);
+  document.getElementById('radarVisual').innerHTML=ZONES.map(z=>{
+    const c=cnts[z.k]||0;
+    return '<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:13px;font-weight:600;color:'+z.color+'">'+z.name+'</span><span style="font-size:13px;font-weight:600">'+c+'</span></div><div style="height:24px;background:#eee;border-radius:4px;overflow:hidden"><div style="height:100%;width:'+(c/max*100)+'%;background:'+z.color+';border-radius:4px;display:flex;align-items:center;padding-left:8px"><span style="font-size:10px;color:white;font-weight:600;mix-blend-mode:difference">'+(c>0?c:'')+'</span></div></div></div>';
+  }).join('');
+}
+
+// Touches/CRM
+const TOUCH_TYPES=['Встреча','Звонок','Email','Telegram','Мероприятие','Другое'];
+function renderTouchesSection(id) {
+  const p=DATA.find(x=>x.id===id); if(!p) return;
+  const el=document.getElementById('touchesSection'+id); if(!el) return;
+  const touches=p.touches||[];
+  let html='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'+
+    '<h4 style="font-size:11px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.5px;font-weight:600">📋 Касания ('+touches.length+')</h4>'+
+    '<button class="btn-secondary" style="font-size:10px;padding:4px 10px;display:flex;align-items:center;gap:4px" onclick="showTouchForm('+id+')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Добавить</button></div>';
+  if(touches.length){
+    [...touches].reverse().forEach(t=>{
+      const typeIcon={Встреча:'🤝',Звонок:'📞',Email:'📧',Telegram:'✈️',Мероприятие:'🎪',Другое:'📌'};
+      html+='<div style="display:flex;gap:10px;padding:10px 12px;background:var(--surface-alt);border-radius:8px;margin-bottom:6px;font-size:12px;border:1px solid var(--border);transition:var(--transition)">'+
+        '<span style="font-size:18px;flex-shrink:0">'+(typeIcon[t.type]||'📌')+'</span>'+
+        '<div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;align-items:start">'+
+        '<strong style="color:var(--text);font-size:12px">'+escHtml(t.topic||t.type||'')+'</strong><span style="color:var(--text-tertiary);font-size:10px;white-space:nowrap;margin-left:8px">'+escHtml(t.date||'')+'</span></div>'+
+        (t.result?'<div style="color:var(--text-secondary);margin-top:3px;font-size:11px;line-height:1.4">'+escHtml(t.result)+'</div>':'')+
+        (t.nextStep?'<div style="color:#059669;margin-top:4px;font-size:11px;font-weight:500;display:flex;align-items:center;gap:4px"><span style="font-size:12px">→</span> '+escHtml(t.nextStep)+'</div>':'')+
+      '</div></div>';
+    });
+  }
+  el.innerHTML=html;
+}
+function showTouchForm(id) {
+  const el=document.getElementById('touchesSection'+id); if(!el) return;
+  const today=new Date().toISOString().slice(0,10);
+  el.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'+
+    '<h4 style="font-size:11px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.5px;font-weight:600">📋 Новое касание</h4></div>'+
+    '<div style="background:var(--surface-alt);border-radius:10px;padding:14px;border:1px solid var(--border)">'+
+    '<div style="display:flex;gap:8px;margin-bottom:8px"><input id="tfDate" type="date" value="'+today+'" style="flex:1;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--surface);color:var(--text)">'+
+    '<select id="tfType" style="flex:1;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--surface);color:var(--text)">'+TOUCH_TYPES.map(t=>'<option>'+t+'</option>').join('')+'</select></div>'+
+    '<input id="tfTopic" placeholder="Тема касания" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;margin-bottom:6px;background:var(--surface);color:var(--text)">'+
+    '<textarea id="tfResult" placeholder="Результат / что обсуждали" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;margin-bottom:6px;resize:vertical;min-height:44px;background:var(--surface);color:var(--text)"></textarea>'+
+    '<input id="tfNext" placeholder="Следующий шаг (необязательно)" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;margin-bottom:10px;background:var(--surface);color:var(--text)">'+
+    '<div style="display:flex;gap:8px"><button class="btn-primary" style="padding:7px 16px;font-size:12px;display:flex;align-items:center;justify-content:center;gap:4px" onclick="saveTouch('+id+')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Сохранить</button>'+
+    '<button class="btn-secondary" style="padding:7px 16px;font-size:12px" onclick="renderTouchesSection('+id+')">✕ Отмена</button></div></div>';
+}
+function saveTouch(id) {
+  const p=DATA.find(x=>x.id===id); if(!p) return;
+  const date=document.getElementById('tfDate').value;
+  const type=document.getElementById('tfType').value;
+  const topic=document.getElementById('tfTopic').value.trim();
+  const result=document.getElementById('tfResult').value.trim();
+  const next=document.getElementById('tfNext').value.trim();
+  if(!topic&&!result){renderTouchesSection(id);return;}
+  if(!p.touches) p.touches=[];
+  p.touches.push({date,type,topic,result,nextStep:next});
+  saveData();
+  renderTouchesSection(id);
+}
+// End Touches
+
+// Projects
+const STAGE_LABELS={idea:'💡 Идея',start:'🚀 Старт',build:'🏗️ Стройка',done:'✅ Завершён',frozen:'❄️ Заморожен'};
+const STAGE_CLASS={idea:'idea',start:'start',build:'build',done:'done',frozen:'frozen'};
+function resetProjectForm(){
+  ['fpName','fpBudget','fpArea','fpLocation','fpStart','fpEnd','fpDesc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fpEditId').value='';
+  document.getElementById('fpStage').value='build';
+  document.getElementById('fpType').value='';
+  document.querySelector('.btn-primary').textContent='➕ Добавить проект';
+  document.getElementById('cancelProjectEdit').style.display='none';
+  window._projPeople=[];
+  renderProjectPeople();
+}
+function renderProjectPeople(){
+  const c=document.getElementById('fpPeople');
+  const ids=window._projPeople||[];
+  c.innerHTML=DATA.map(p=>'<span class="project-person-tag" style="'+(ids.includes(p.id)?'background:#1a1a2e;color:white':'')+'" onclick="toggleProjPerson('+p.id+')">'+p.name+'</span>').join('');
+}
+function toggleProjPerson(id){
+  if(!window._projPeople) window._projPeople=[];
+  const idx=window._projPeople.indexOf(id);
+  if(idx>=0) window._projPeople.splice(idx,1); else window._projPeople.push(id);
+  renderProjectPeople();
+}
+function saveProject(){
+  const name=document.getElementById('fpName').value.trim();
+  if(!name){notify('Введите название проекта','error');return;}
+  const editId=document.getElementById('fpEditId').value;
+  const isNew=!editId;
+  const p=isNew?{}:PROJECTS.find(x=>x.id==+editId)||{};
+  p.name=name; p.stage=document.getElementById('fpStage').value;
+  p.budget=document.getElementById('fpBudget').value.trim();
+  p.area=document.getElementById('fpArea').value.trim();
+  p.type=document.getElementById('fpType').value;
+  p.location=document.getElementById('fpLocation').value.trim();
+  p.startDate=document.getElementById('fpStart').value;
+  p.endDate=document.getElementById('fpEnd').value;
+  p.description=document.getElementById('fpDesc').value.trim();
+  p.people=window._projPeople||[];
+  if(isNew){p.id=projIdCounter++;PROJECTS.push(p);}
+  resetProjectForm();
+  saveData();
+  notify(isNew?'✅ Проект «'+name+'» добавлен':'✏️ Проект «'+name+'» обновлён');
+  renderProjectsList();
+}
+function editProject(id){
+  const p=PROJECTS.find(x=>x.id===id); if(!p) return;
+  document.getElementById('fpName').value=p.name;
+  document.getElementById('fpStage').value=p.stage||'build';
+  document.getElementById('fpBudget').value=p.budget||'';
+  document.getElementById('fpArea').value=p.area||'';
+  document.getElementById('fpType').value=p.type||'';
+  document.getElementById('fpLocation').value=p.location||'';
+  document.getElementById('fpStart').value=p.startDate||'';
+  document.getElementById('fpEnd').value=p.endDate||'';
+  document.getElementById('fpDesc').value=p.description||'';
+  document.getElementById('fpEditId').value=p.id;
+  window._projPeople=(p.people||[]).slice();
+  renderProjectPeople();
+  document.querySelector('.btn-primary').textContent='💾 Обновить проект';
+  document.getElementById('cancelProjectEdit').style.display='block';
+  document.getElementById('viewProjects').scrollIntoView({behavior:'smooth'});
+}
+function cancelProjectEdit(){resetProjectForm();notify('Отменено');}
+function deleteProject(id){
+  const p=PROJECTS.find(x=>x.id===id); if(!p||!confirm('Удалить проект «'+p.name+'»?')) return;
+  PROJECTS=PROJECTS.filter(x=>x.id!==id); saveData(); notify('🗑️ Проект удалён');
+}
+function renderProjectsList(){
+  const el=document.getElementById('projectsList');
+  if(!PROJECTS.length){el.innerHTML='<p style="color:#999;font-size:13px">Проектов пока нет</p>';return;}
+  el.innerHTML=PROJECTS.sort((a,b)=>a.name.localeCompare(b.name)).map(p=>{
+    const stageClass=STAGE_CLASS[p.stage]||'idea';
+    return '<div class="project-card" onclick="showProjectDetail('+p.id+')">'+
+      '<div class="pc-header"><span class="pc-name">'+escHtml(p.name)+'</span><span class="stage-badge '+stageClass+'">'+(STAGE_LABELS[p.stage]||'💡')+'</span></div>'+
+      '<div class="pc-meta">'+
+        (p.budget?'<span>💰 '+escHtml(p.budget)+'</span>':'')+
+        (p.area?'<span>📐 '+escHtml(p.area)+'</span>':'')+
+        (p.location?'<span>📍 '+escHtml(p.location)+'</span>':'')+
+        (p.type?'<span>🏗️ '+escHtml(p.type)+'</span>':'')+
+        (p.startDate?'<span>📅 '+escHtml(p.startDate)+(p.endDate?' — '+escHtml(p.endDate):'')+'</span>':'')+
+      '</div>'+
+      (p.people&&p.people.length?'<div class="pc-people">'+p.people.map(pid=>{
+        const per=DATA.find(x=>x.id===pid);
+        return per?'<span class="project-person-tag" onclick="event.stopPropagation();showDetail('+pid+')">'+per.name.split(' ')[0]+'</span>':'';
+      }).join('')+'</div>':'')+
+      '<div class="pc-actions">' +
+        '<button class="edit-btn" onclick="event.stopPropagation();openProjectRoom('+p.id+')">🚪</button> ' +
+        '<button class="edit-btn" onclick="event.stopPropagation();editProject('+p.id+')">✎</button> ' +
+        '<button class="btn-danger" onclick="event.stopPropagation();deleteProject('+p.id+')">✕</button></div>'+
+    '</div>';
+  }).join('');
+}
+function showProjectDetail(id){
+  const p=PROJECTS.find(x=>x.id===id); if(!p)return;
+  const stageClass=STAGE_CLASS[p.stage]||'idea';
+  let html='<button class="modal-close" onclick="closeDetail()">×</button>'+
+    '<h2 style="margin-bottom:4px">📋 '+escHtml(p.name)+'</h2>'+
+    '<span class="stage-badge '+stageClass+'" style="font-size:14px">'+(STAGE_LABELS[p.stage]||'💡')+'</span>'+
+    '<div class="detail-grid" style="margin-top:16px">'+
+    (p.type?'<div class="detail-item"><h4>Тип</h4><p>'+escHtml(p.type)+'</p></div>':'')+
+    (p.budget?'<div class="detail-item"><h4>Бюджет</h4><p>💰 '+escHtml(p.budget)+'</p></div>':'')+
+    (p.area?'<div class="detail-item"><h4>Площадь</h4><p>📐 '+escHtml(p.area)+'</p></div>':'')+
+    (p.location?'<div class="detail-item"><h4>Локация</h4><p>📍 '+escHtml(p.location)+'</p></div>':'')+
+    (p.startDate?'<div class="detail-item"><h4>Сроки</h4><p>📅 '+escHtml(p.startDate)+(p.endDate?' — '+escHtml(p.endDate):'')+'</p></div>':'')+
+    (p.description?'<div class="detail-item" style="grid-column:1/-1"><h4>Описание</h4><p>'+escHtml(p.description)+'</p></div>':'')+
+    '</div>';
+  if(p.people&&p.people.length){
+    html+='<h4 style="font-size:12px;color:#999;text-transform:uppercase;margin:12px 0 8px">👥 Участники ('+p.people.length+')</h4>';
+    p.people.forEach(pid=>{
+      const per=DATA.find(x=>x.id===pid);
+      if(!per)return;
+      const z=ZONES[per.zone||2];
+      html+='<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#f8f9fa;border-radius:6px;margin-bottom:4px;font-size:13px">'+
+        '<span class="zone-badge '+z.k+'">'+z.k.toUpperCase()+'</span>'+
+        '<a href="#" onclick="closeDetail();showDetail('+per.id+');return false" style="color:#1a1a2e;text-decoration:none;font-weight:500">'+per.name+'</a>'+
+        '<span style="color:#999;font-size:11px">'+(per.company||'')+'</span></div>';
+    });
+  }
+  document.getElementById('detailContent').innerHTML=html+
+    '<div style="display:flex;gap:8px;margin-top:16px"><button class="btn-secondary" onclick="closeDetail();editProject('+p.id+')">✏️ Редактировать</button></div>';
+  document.getElementById('detailModal').classList.add('show');
+}
+// End Projects
+
+function showDetail(id) {
+  const p=DATA.find(x=>x.id===id); if (!p) return;
+  const z=ZONES[p.zone]||ZONES[0];
+  const photo=p.photo?'<img src="'+p.photo+'" class="person-photo" onerror="this.style.display=\'none\'">':'<span style="display:inline-flex;align-items:center;justify-content:center;width:60px;height:60px;border-radius:50%;background:'+z.color+'15;font-size:28px">👤</span>';
+  const logo=p.logo?'<img src="'+p.logo+'" style="max-height:32px;opacity:.7" onerror="this.style.display=\'none\'">':'';
+  document.getElementById('detailContent').innerHTML=
+    '<button class="modal-close" onclick="closeDetail()">×</button>'+
+    '<div style="display:flex;gap:16px;align-items:center;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)">'+photo+
+    '<div><h2 style="margin:0;font-size:20px;font-weight:700;color:var(--text)">'+p.name+'</h2>'+(p.company?'<p style="color:var(--text-secondary);font-size:13px;margin-top:4px;display:flex;align-items:center;gap:6px">'+p.company+' '+logo+'</p>':'')+
+    '<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center"><span class="zone-badge '+z.k+'" style="font-size:11px;padding:3px 10px">'+z.name+'</span>'+
+    (p.position?'<span style="font-size:11px;color:var(--text-tertiary);padding:3px 0">'+p.position+'</span>':'')+
+    (function(){ const sc=calcScore(p.id); const sl=getScoreLevel(sc); return '<span style="font-size:11px;padding:3px 10px;border-radius:6px;background:var(--surface-alt);color:'+sl.color+';font-weight:600">'+sl.icon+' '+sl.label+' ('+sc+')</span>'; })()+
+    '</div></div></div>'+
+    '<div class="detail-grid">'+
+      (p.phone?'<div class="detail-item"><h4>📞 Телефон</h4><p><a href="tel:'+p.phone+'" style="color:var(--primary);text-decoration:none">'+p.phone+'</a></p></div>':'')+
+      (p.email?'<div class="detail-item"><h4>✉️ Email</h4><p><a href="mailto:'+p.email+'" style="color:var(--primary);text-decoration:none">'+p.email+'</a></p></div>':'')+
+      (p.messenger?'<div class="detail-item"><h4>💬 Мессенджер</h4><p>'+p.messenger+'</p></div>':'')+
+      (p.role?'<div class="detail-item"><h4>Роль</h4><p>'+p.role+'</p></div>':'')+
+      (p.competencies?'<div class="detail-item" style="grid-column:1/-1"><h4>🧠 Что предлагает</h4><p style="font-size:13px;display:flex;flex-wrap:wrap;gap:4px">'+p.competencies.split(',').map(s=>'<span class="match-tag">'+s.trim()+'</span>').join(' ')+'</p></div>':'')+
+      (p.requests?'<div class="detail-item" style="grid-column:1/-1"><h4>🎯 Что ищет</h4><p style="font-size:13px;display:flex;flex-wrap:wrap;gap:4px">'+p.requests.split(',').map(s=>'<span class="req-tag">'+s.trim()+'</span>').join(' ')+'</p></div>':'')+
+      (p.assets?'<div class="detail-item"><h4>📊 Активы</h4><p style="font-size:13px"><span style="font-weight:600">Экспертиза</span> '+p.assets[0]+' · <span style="font-weight:600">Ресурсы</span> '+p.assets[1]+' · <span style="font-weight:600">Связи</span> '+p.assets[2]+' · <span style="font-weight:600">Влияние</span> '+p.assets[3]+'</p></div>':'')+
+      (p.liabilities?'<div class="detail-item"><h4>⚖️ Пассивы</h4><p style="font-size:13px"><span style="font-weight:600">Потребности</span> '+p.liabilities[0]+' · <span style="font-weight:600">Зависимости</span> '+p.liabilities[1]+'</p></div>':'')+
+      (p.note?'<div class="detail-item" style="grid-column:1/-1"><h4>👁️ Наблюдение</h4><p style="font-size:13px;color:var(--text);line-height:1.5">'+p.note+'</p></div>':'')+
+    '</div>'+
+    (function(){
+      const conns=CONNECTIONS.filter(c=>c.from===p.id||c.to===p.id);
+      if(!conns.length) return '';
+      return '<div style="margin-top:16px"><h4 style="font-size:11px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;font-weight:600">🔗 Связи ('+conns.length+')</h4>'+
+        conns.map(c=>{
+          const other=DATA.find(x=>x.id===(c.from===p.id?c.to:c.from));
+          if(!other) return '';
+          const oz=ZONES[other.zone||2];
+          return '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface-alt);border-radius:8px;margin-bottom:5px;font-size:13px;transition:var(--transition);cursor:pointer" onclick="closeDetail();showDetail('+other.id+')" onmouseenter="this.style.background=\'var(--surface-hover)\'" onmouseleave="this.style.background=\'var(--surface-alt)\'">'+
+            '<span class="zone-badge '+oz.k+'">'+oz.k.toUpperCase()+'</span>'+
+            '<span style="color:var(--text);font-weight:500;flex:1">'+other.name+'</span>'+
+            '<span style="color:var(--text-tertiary);font-size:11px">'+(other.company||'')+'</span>'+
+          '</div>';
+        }).join('')+'</div>';
+    })()+
+    (function(){
+      const myProjects=PROJECTS.filter(pr=>(pr.people||[]).includes(p.id));
+      if(!myProjects.length) return '';
+      return '<div style="margin-top:16px"><h4 style="font-size:11px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;font-weight:600">📋 Проекты ('+myProjects.length+')</h4>'+
+        myProjects.map(pr=>{
+          return '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface-alt);border-radius:8px;margin-bottom:5px;font-size:13px;transition:var(--transition);cursor:pointer" onclick="closeDetail();showProjectDetail('+pr.id+')" onmouseenter="this.style.background=\'var(--surface-hover)\'" onmouseleave="this.style.background=\'var(--surface-alt)\'">'+
+            '<span class="stage-badge '+(STAGE_CLASS[pr.stage]||'idea')+'" style="font-size:9px;padding:2px 8px">'+(STAGE_LABELS[pr.stage]||'💡').slice(0,2)+'</span>'+
+            '<span style="color:var(--text);font-weight:500;flex:1">'+escHtml(pr.name)+'</span>'+
+            (pr.budget?'<span style="color:var(--text-tertiary);font-size:11px">💰 '+escHtml(pr.budget)+'</span>':'')+
+          '</div>';
+        }).join('')+'</div>';
+    })()+
+    '<div id="touchesSection'+p.id+'" style="margin-top:16px"></div>'+
+    '<div style="display:flex;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)"><button class="btn-secondary" onclick="closeDetail();editPerson('+p.id+')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg> Редактировать</button></div>';
+  renderTouchesSection(p.id);
+  document.getElementById('detailModal').classList.add('show');
+}
+
+function closeDetail() { document.getElementById('detailModal').classList.remove('show'); }
+
+function switchTab(name,btn) {
+  document.querySelectorAll('.card .tabs .tab').forEach(t=>t.classList.remove('active')); btn.classList.add('active');
+  document.getElementById('tabAdd').classList.toggle('hidden',name!=='add');
+  document.getElementById('tabStats').classList.toggle('hidden',name!=='stats');
+  document.getElementById('tabImport').classList.toggle('hidden',name!=='import');
+  if (name==='stats') renderQuickStats();
+}
+
+function switchView(name,btn) {
+  document.querySelectorAll('.card .tabs .tab').forEach(t=>t.classList.remove('active')); btn.classList.add('active');
+  ['list','radar','graph','projects','board','dealrooms','projectrooms','deals','dashboard','ai','strategy','sync'].forEach(v=>document.getElementById('view'+v[0].toUpperCase()+v.slice(1)).classList.toggle('hidden',v!==name));
+  if (name==='radar') renderRadar();
+  if (name==='graph') renderGraph();
+  if (name==='projects') { renderProjectsList(); renderProjectPeople(); }
+  if (name==='board') renderBoard();
+  if (name==='dealrooms') renderDealRooms();
+  if (name==='projectrooms') renderProjectRooms();
+  if (name==='deals') renderKanban();
+  if (name==='dashboard') renderDashboard();
+  if (name==='ai') renderAiDigest(); renderStrategy();
+}
+
+function renderAll() {
+  renderQuickStats(); renderPeople(); renderStats(); renderRadar(); renderGraph(); renderProjectsList(); renderBoard(); renderDealRooms(); renderProjectRooms(); renderDashboard(); renderKanban(); renderAiDigest(); renderStrategy(); updateNotifBadge(); }
+
+// Graph visualization
+function setGraphFilter(zone, btn) {
+  document.querySelectorAll('.graph-controls [data-zone]').forEach(b=>b.classList.remove('active'));
+  if(zone==='all'){ graphZoneFilter=[]; btn.classList.add('active'); }
+  else {
+    const idx=graphZoneFilter.indexOf(zone);
+    if(idx>=0) graphZoneFilter.splice(idx,1); else graphZoneFilter.push(zone);
+    if(!graphZoneFilter.length){ document.querySelector('.graph-controls [data-zone="all"]').classList.add('active'); }
+    btn.classList.toggle('active');
+  }
+  renderGraph();
+}
+function toggleGraphMode(mode) {
+  if (graphMode===mode) { graphMode=null; graphPending=null; document.getElementById('graphStatus').textContent=''; }
+  else { graphMode=mode; graphPending=null; document.getElementById('graphStatus').textContent=mode==='connect'?'Кликни на первого человека...':'Кликни на связь...'; }
+  document.getElementById('graphModeConnect').classList.toggle('active',graphMode==='connect');
+  document.getElementById('graphModeRemove').classList.toggle('active',graphMode==='remove');
+}
+
+function renderGraph() {
+  const svg=document.getElementById('graphSvg');
+  const wrap=document.getElementById('graphWrap');
+  const W=wrap.clientWidth||700, H=500, CX=W/2, CY=H/2, R=Math.min(W,CX)-80, IR=50;
+  const filtered=graphZoneFilter.length ? DATA.filter(p=>graphZoneFilter.includes(p.zone)) : DATA;
+  if (filtered.length<1) { svg.innerHTML='<text x="'+CX+'" y="'+CY+'" text-anchor="middle" fill="#999" font-size="14">Нет данных в выбранных зонах</text>'; document.getElementById('matchesSection').innerHTML=''; return; }
+  const tip=document.getElementById('graphTip');
+  let html='';
+
+  // Draw zone arcs (only selected if filtered)
+  const ZONE_NAMES=['А: Наставники','Б: Соратники','В: Последователи','Г: Боссы','Д: Коллеги','Е: Команда'];
+  for (let i=0;i<6;i++) {
+    const a1=(i*60-90)*Math.PI/180, a2=((i+1)*60-90)*Math.PI/180;
+    const x1=CX+R*Math.cos(a1), y1=CY+R*Math.sin(a1);
+    const x2=CX+R*Math.cos(a2), y2=CY+R*Math.sin(a2);
+    const x1i=CX+IR*Math.cos(a1), y1i=CY+IR*Math.sin(a1);
+    const x2i=CX+IR*Math.cos(a2), y2i=CY+IR*Math.sin(a2);
+    const large=i===5?1:0;
+    html+='<path d="M'+x1i+','+y1i+' L'+x1+','+y1+' A'+R+','+R+' 0 0,1 '+x2+','+y2+' L'+x2i+','+y2i+' A'+IR+','+IR+' 0 0,0 '+x1i+','+y1i+'" fill="'+ZONES[i].color+'" fill-opacity="0.06" stroke="'+ZONES[i].color+'" stroke-opacity="0.3" stroke-width="1"/>';
+    const am=(i*60+30-90)*Math.PI/180;
+    html+='<text x="'+(CX+(R+20)*Math.cos(am))+'" y="'+(CY+(R+20)*Math.sin(am))+'" class="graph-zone-label" fill="'+ZONES[i].color+'">'+ZONE_NAMES[i]+'</text>';
+  }
+
+  // Position people by zone
+  const byZone={}; for (let i=0;i<6;i++) byZone[i]=[];
+  filtered.forEach(p => { const z=p.zone||2; byZone[z].push(p); });
+  const positions={}; const MAX_DIST=85;
+  for (let z=0;z<6;z++) {
+    const people=byZone[z]; if (!people.length) continue;
+    const aStart=(z*60-90)*Math.PI/180, aEnd=((z+1)*60-90)*Math.PI/180;
+    const aMid=(aStart+aEnd)/2;
+    people.forEach((p,i)=>{
+      const total=people.length;
+      const frac=(total===1?0.5:(i/(total-1)))-0.5;
+      const angle=aMid+frac*(aEnd-aStart)*0.7;
+      const assetAvg=p.assets?p.assets.reduce((s,v)=>s+v,0)/p.assets.length:5;
+      const dist=IR+(assetAvg/10)*MAX_DIST;
+      const x=CX+dist*Math.cos(angle), y=CY+dist*Math.sin(angle);
+      positions[p.id]={x,y,zone:z};
+    });
+  }
+
+  // Draw connections (only if both ends visible)
+  CONNECTIONS.forEach(c => {
+    const f=positions[c.from], t=positions[c.to];
+    if (!f||!t) return;
+    html+='<line x1="'+f.x+'" y1="'+f.y+'" x2="'+t.x+'" y2="'+t.y+'" class="graph-link" data-from="'+c.from+'" data-to="'+c.to+'" onclick="graphLinkClick(event,'+c.from+','+c.to+')" stroke="'+ZONES[c.zone||0].color+'"/>';
+  });
+
+  // Draw people
+  filtered.forEach(p => {
+    const pos=positions[p.id]; if (!pos) return;
+    const z=ZONES[p.zone]||ZONES[0];
+    const r=Math.max(8,Math.min(16,((p.assets?p.assets.reduce((s,v)=>s+v,0)/4:5)+5)));
+    const photo=p.photo?'<image href="'+p.photo+'" x="'+(pos.x-r)+'" y="'+(pos.y-r)+'" width="'+(r*2)+'" height="'+(r*2)+'" clip-path="url(#circleClip)" onerror="this.style.display=\'none\'"/>':'';
+    const border=p.photo?' stroke="white" stroke-width="2"':'';
+    html+='<g class="graph-node" onclick="graphNodeClick(event,'+p.id+')" onmouseenter="graphHover('+p.id+',event)" onmouseleave="graphUnhover()">'+
+      '<circle cx="'+pos.x+'" cy="'+pos.y+'" r="'+r+'" fill="'+z.color+'" fill-opacity="0.9"'+border+'/>'+
+      photo+
+      '<text x="'+pos.x+'" y="'+(pos.y+r+14)+'" text-anchor="middle" fill="#333" font-size="10">'+p.name.split(' ')[0]+'</text>'+
+    '</g>';
+  });
+
+  // Defs for clip path
+  html='<defs><clipPath id="circleClip"><circle cx="0" cy="0" r="999"/></clipPath></defs>'+html;
+  // Center label
+  html+='<text x="'+CX+'" y="'+(CY+4)+'" text-anchor="middle" fill="#999" font-size="11" font-weight="600">РАДАР</text>';
+
+  // Draw project nodes
+  if(PROJECTS.length){
+    const projR=12;
+    PROJECTS.forEach((pr,i)=>{
+      if(!pr.people||!pr.people.length) return;
+      // Position projects in inner circle, spread evenly
+      const angle=(i/PROJECTS.length)*Math.PI*2 - Math.PI/2;
+      const px=CX+IR*0.5*Math.cos(angle), py=CY+IR*0.5*Math.sin(angle);
+      // Draw lines to connected people
+      pr.people.forEach(pid=>{
+        const pos=positions[pid];
+        if(!pos) return;
+        html+='<line x1="'+px+'" y1="'+py+'" x2="'+pos.x+'" y2="'+pos.y+'" stroke="#bbb" stroke-width="1" stroke-dasharray="3,2" opacity="0.4"/>';
+      });
+      // Diamond shape
+      const d=`M${px},${py-projR} L${px+projR},${py} L${px},${py+projR} L${px-projR},${py} Z`;
+      html+='<g class="graph-node" onclick="event.stopPropagation();showProjectDetail('+pr.id+')" onmouseenter="this.querySelector(\'text\').style.display=\'block\'" onmouseleave="this.querySelector(\'text\').style.display=\'none\'">'+
+        '<path d="'+d+'" fill="#1a1a2e" fill-opacity="0.8" stroke="white" stroke-width="1.5"/>'+
+        '<text x="'+px+'" y="'+(py+3)+'" text-anchor="middle" fill="white" font-size="10" font-weight="600">📋</text>'+
+        '<text x="'+px+'" y="'+(py+projR+14)+'" text-anchor="middle" fill="#1a1a2e" font-size="8" font-weight="600" style="display:none">'+escHtml(pr.name.split(' ').slice(0,2).join(' '))+'</text>'+
+      '</g>';
+    });
+  }
+
+  svg.innerHTML=html;
+  svg.setAttribute('viewBox','0 0 '+W+' '+H);
+  drawMatchLines();
+  renderMatches();
+}
+
+function drawMatchLines() {
+  const svg=document.getElementById('graphSvg');
+  const wrap=document.getElementById('graphWrap');
+  const W=wrap.clientWidth||700, H=500, CX=W/2, CY=H/2, R=Math.min(W,CX)-80, IR=50;
+  const filtered=graphZoneFilter.length ? DATA.filter(p=>graphZoneFilter.includes(p.zone)) : DATA;
+  const positions={};
+  const byZone={}; for(let i=0;i<6;i++) byZone[i]=[];
+  filtered.forEach(p=>{const z=p.zone||2;byZone[z].push(p);});
+  for(let z=0;z<6;z++){
+    const people=byZone[z]; if(!people.length) continue;
+    const aStart=(z*60-90)*Math.PI/180, aEnd=((z+1)*60-90)*Math.PI/180, aMid=(aStart+aEnd)/2;
+    people.forEach((p,i)=>{
+      const frac=(people.length===1?0.5:(i/(people.length-1)))-0.5;
+      const angle=aMid+frac*(aEnd-aStart)*0.7;
+      const dist=IR+((p.assets?p.assets.reduce((s,v)=>s+v,0)/p.assets.length:5)/10)*(R-IR-20);
+      positions[p.id]={x:CX+dist*Math.cos(angle),y:CY+dist*Math.sin(angle)};
+    });
+  }
+  let extra='';
+  findMatches().forEach(m=>{
+    const f=positions[m.from],t=positions[m.to];
+    if(!f||!t)return;
+    extra+='<line x1="'+f.x+'" y1="'+f.y+'" x2="'+t.x+'" y2="'+t.y+'" class="graph-match" stroke="#e65100"/>';
+  });
+  if(extra) svg.insertAdjacentHTML('afterbegin',extra);
+}
+
+function graphNodeClick(e,id) {
+  if (graphMode==='connect') {
+    if (!graphPending) { graphPending=id; document.getElementById('graphStatus').textContent='Кликни на второго человека...'; return; }
+    if (graphPending===id) { graphPending=null; document.getElementById('graphStatus').textContent=''; return; }
+    const exists=CONNECTIONS.some(c=>(c.from===graphPending&&c.to===id)||(c.from===id&&c.to===graphPending));
+    if (!exists) { CONNECTIONS.push({from:graphPending,to:id,zone:0}); saveData(); }
+    graphPending=null; document.getElementById('graphStatus').textContent='✅ Связь создана';
+    renderGraph(); return;
+  }
+  showDetail(id);
+}
+
+function graphLinkClick(e,from,to) {
+  e.stopPropagation();
+  if (graphMode==='remove') {
+    CONNECTIONS=CONNECTIONS.filter(c=>!(c.from===from&&c.to===to)&&!(c.from===to&&c.to===from));
+    saveData();
+    document.getElementById('graphStatus').textContent='✂️ Связь удалена';
+    renderGraph();
+  }
+}
+
+function graphHover(id,e) {
+  const p=DATA.find(x=>x.id===id); if (!p) return;
+  const tip=document.getElementById('graphTip');
+  const rect=document.getElementById('graphWrap').getBoundingClientRect();
+  tip.style.display='block';
+  tip.style.left=(e.clientX-rect.left+10)+'px';
+  tip.style.top=(e.clientY-rect.top-30)+'px';
+  tip.textContent=p.name+(p.company?' · '+p.company:'')+' [зона '+ZONES[p.zone||2].k.toUpperCase()+']';
+}
+function graphUnhover() { document.getElementById('graphTip').style.display='none'; }
+
+// Matching engine
+function parseTags(s) { return (s||'').split(',').map(t=>t.trim().toLowerCase()).filter(t=>t); }
+
+
+// Enhanced НАРСО matching: type complementarity + synergy + competency + strength/weakness
+const TYPE_COMPLEMENTARITY = {
+  'девелопер': ['инженерный_подрядчик', 'архитектура', 'домостроение', 'проектный_инжиниринг'],
+  'домостроение': ['инженерный_подрядчик', 'архитектура', 'проектный_инжиниринг'],
+  'инженерный_подрядчик': ['девелопер', 'домостроение', 'проектный_инжиниринг'],
+  'архитектура': ['девелопер', 'домостроение', 'инженерный_подрядчик'],
+  'проектный_инжиниринг': ['девелопер', 'домостроение', 'инженерный_подрядчик'],
+  'инфраструктура': ['девелопер', 'домостроение', 'управление'],
+  'управление': ['девелопер', 'домостроение', 'инженерный_подрядчик', 'инфраструктура'],
+  'соучредитель': ['домостроение', 'девелопер', 'управление', 'инженерный_подрядчик', 'инфраструктура'],
+  'социальный_капитал': ['девелопер', 'домостроение', 'управление', 'инфраструктура'],
+};
+
+const TYPE_LABELS = {
+  'девелопер': 'Девелопер', 'домостроение': 'Домостроение',
+  'инженерный_подрядчик': 'Инженер', 'архитектура': 'Архитектор',
+  'проектный_инжиниринг': 'Проектировщик', 'инфраструктура': 'Платформа',
+  'управление': 'Управление', 'соучредитель': 'Лидер',
+  'социальный_капитал': 'Партнёр',
+};
+
+function findEnhancedMatches() {
+  const matches = [];
+  for (const a of DATA) {
+    for (const b of DATA) {
+      if (a.id >= b.id) continue;
+      let score = 0;
+      const reasons = [];
+
+      // 1. Type complementarity
+      const compTypes = TYPE_COMPLEMENTARITY[a.type] || [];
+      if (compTypes.includes(b.type)) {
+        score += 3;
+        reasons.push((TYPE_LABELS[a.type]||a.type) + ' ⇄ ' + (TYPE_LABELS[b.type]||b.type));
+      }
+
+      // 2. Explicit synergy mention
+      if (a.synergy && b.name && a.synergy.toLowerCase().includes(b.name.toLowerCase().split(' ')[0].toLowerCase())) {
+        score += 5;
+        reasons.push('Явная синергия: ' + a.synergy);
+      }
+      if (b.synergy && a.name && b.synergy.toLowerCase().includes(a.name.toLowerCase().split(' ')[0].toLowerCase())) {
+        score += 5;
+        reasons.push('Явная синергия: ' + b.synergy);
+      }
+
+      // 3. Competency match (original + enhanced)
+      const aComp = parseTags(a.competencies);
+      const aReq = parseTags(a.requests);
+      const bComp = parseTags(b.competencies);
+      const bReq = parseTags(b.requests);
+
+      aComp.forEach(c => {
+        if (bReq.includes(c)) { score += 3; reasons.push(c + ': ' + a.name + '→' + b.name); }
+      });
+      bComp.forEach(c => {
+        if (aReq.includes(c)) { score += 3; reasons.push(c + ': ' + b.name + '→' + a.name); }
+      });
+
+      // 4. Strength/weakness complementarity
+      if (a.strength && b.weakness && hasWordOverlap(a.strength, b.weakness)) {
+        score += 2; reasons.push('Сила/слабость: ' + a.name + ' → ' + b.name);
+      }
+      if (b.strength && a.weakness && hasWordOverlap(b.strength, a.weakness)) {
+        score += 2; reasons.push('Сила/слабость: ' + b.name + ' → ' + a.name);
+      }
+
+      if (score > 0) {
+        matches.push({ from: a.id, to: b.id, score, reasons: [...new Set(reasons)] });
+      }
+    }
+  }
+  matches.sort((x, y) => y.score - x.score);
+  return matches;
+}
+
+function hasWordOverlap(a, b) {
+  const wa = new Set((a||'').toLowerCase().split(/[,\s]+/).filter(Boolean));
+  const wb = new Set((b||'').toLowerCase().split(/[,\s]+/).filter(Boolean));
+  for (const w of wa) { if (w.length > 3 && wb.has(w)) return true; }
+  return false;
+}
+
+function renderEnhancedMatches() {
+  const el = document.getElementById('matchesSection');
+  const matches = findEnhancedMatches();
+  if (!matches.length) { el.innerHTML = '<p style="color:#999;font-size:13px">Стыковок пока нет — добавьте теги</p>'; return; }
+  el.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">' +
+    '<h3 style="font-size:14px">🤝 НАРСО-мэтчинг (рейтинг)</h3>' +
+    '<span style="font-size:12px;color:#999">' + matches.length + ' шт.</span></div>' +
+    matches.map(m => {
+      const a = DATA.find(x => x.id === m.from), b = DATA.find(x => x.id === m.to);
+      if (!a || !b) return '';
+      const za = ZONES[a.zone || 2], zb = ZONES[b.zone || 2];
+      const color = m.score >= 8 ? '#059669' : m.score >= 5 ? '#d97706' : '#64748b';
+      const hasConn = CONNECTIONS.some(c => (c.from === m.from && c.to === m.to) || (c.from === m.to && c.to === m.from));
+      return '<div class="match-card" style="border-left:3px solid ' + color + '">' +
+        '<div class="mc-name"><span class="zone-badge ' + za.k + '">' + za.k.toUpperCase() + '</span> ' + escHtml(a.name) + '</div>' +
+        '<div class="mc-tags"><span style="font-size:11px;font-weight:600;color:' + color + '">★' + m.score + '</span> ' +
+        m.reasons.map(r => '<span class="match-tag">' + escHtml(r) + '</span>').join(' ') + '</div>' +
+        '<div class="mc-name"><span class="zone-badge ' + zb.k + '">' + zb.k.toUpperCase() + '</span> ' + escHtml(b.name) + '</div>' +
+        (hasConn ? '<span style="font-size:11px;color:#999;flex-shrink:0">🔗</span>' :
+          '<button class="btn-secondary" style="font-size:10px;padding:2px 8px;flex-shrink:0" onclick="quickConnect(' + m.from + ',' + m.to + ');renderEnhancedMatches()">🔗</button>') +
+        '</div>';
+    }).join('');
+}
+
+function findMatches() {
+  const result=[];
+  DATA.forEach(a => {
+    const aComp=parseTags(a.competencies), aReq=parseTags(a.requests);
+    if (!aComp.length&&!aReq.length) return;
+    DATA.forEach(b => {
+      if (a.id>=b.id) return;
+      const bComp=parseTags(b.competencies), bReq=parseTags(b.requests);
+      const ab={from:a.id,to:b.id,tags:[]}, ba={from:b.id,to:a.id,tags:[]};
+      aComp.forEach(c=>{if(bReq.includes(c))ab.tags.push(c);});
+      bComp.forEach(c=>{if(aReq.includes(c))ba.tags.push(c);});
+      if(ab.tags.length) result.push(ab);
+      if(ba.tags.length) result.push(ba);
+    });
+  });
+  return result;
+}
+
+function renderMatches() {
+  const el=document.getElementById('matchesSection');
+  const matches=findMatches();
+  if(!matches.length){el.innerHTML='';return;}
+  el.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h3 style="font-size:14px">🤝 Стыковки (что предлагает → что ищут)</h3><span style="font-size:12px;color:#999">'+matches.length+' шт.</span></div>'+
+    matches.map(m=>{
+      const a=DATA.find(x=>x.id===m.from),b=DATA.find(x=>x.id===m.to);
+      if(!a||!b)return'';
+      const za=ZONES[a.zone||2],zb=ZONES[b.zone||2];
+      const hasConn=CONNECTIONS.some(c=>(c.from===m.from&&c.to===m.to)||(c.from===m.to&&c.to===m.from));
+      return '<div class="match-card"><div class="mc-name"><span class="zone-badge '+za.k+'">'+za.k.toUpperCase()+'</span> '+(a.name.split(' ')[0])+'</div><div class="mc-tags">'+m.tags.map(t=>'<span class="match-tag">'+t+'</span>').join(' ')+'</div><div class="mc-name"><span class="zone-badge '+zb.k+'">'+zb.k.toUpperCase()+'</span> '+(b.name.split(' ')[0])+'</div>'+
+        (hasConn?'<span style="font-size:11px;color:#999;flex-shrink:0">🔗</span>':'<button class="btn-secondary" style="font-size:10px;padding:2px 8px;flex-shrink:0" onclick="quickConnect('+m.from+','+m.to+');this.outerHTML=\'<span style=\\\'font-size:11px;color:#999\\\'>🔗</span>\'">🔗</button>')+
+      '</div>';
+    }).join('');
+}
+
+// CSV
+function downloadTemplate() {
+  const csv='Имя,Компания,Должность,Телефон,Email,Наблюдение,Что_предлагаю,Что_ищу\nДевелопер Иванов,СтройГрупп,Генеральный директор,+7(999)123-45-67,i@example.com,Партнёр,девелопмент,"строительство, проектирование"\n,,,,,,,\n';
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='радар_шаблон.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(a.href);
+  notify('📥 Шаблон скачан');
+}
+
+function importCSV(e) {
+  const file=e.target.files[0]; if (!file) return;
+  const reader=new FileReader();
+  reader.onload=function(ev) {
+    const lines=ev.target.result.split('\n').filter(l=>l.trim());
+    let imported=0, errors=0;
+    const unknownTags=new Set();
+    const allTaxoLower=[];
+    TAXONOMY.forEach(g=>g.tags.forEach(t=>allTaxoLower.push(t.toLowerCase())));
+    const normTag=(tag)=>{
+      const tl=tag.toLowerCase();
+      for(const g of TAXONOMY) for(const t of g.tags) if(t.toLowerCase()===tl) return t;
+      if(!allTaxoLower.includes(tl)) unknownTags.add(tag);
+      return tag;
+    };
+    lines.forEach((line,i)=>{
+      if(i===0 && line.toLowerCase().includes('имя')) return;
+      const p=line.split(',').map(s=>s.trim().replace(/^"|"$/g,''));
+      if(p[0]){
+        const rawComp=p[6]||'', rawReq=p[7]||'';
+        const compTags=rawComp.split(',').map(t=>t.trim()).filter(t=>t).map(normTag);
+        const reqTags=rawReq.split(',').map(t=>t.trim()).filter(t=>t).map(normTag);
+        DATA.push({id:idCounter++,name:p[0],company:p[1]||'',position:p[2]||'',phone:p[3]||'',email:p[4]||'',note:p[5]||'',photo:'',logo:'',messenger:'',competencies:compTags.join(', '),requests:reqTags.join(', '),assets:[5,5,5,5],liabilities:[5,5],zone:calcPersonZone({assets:[5,5,5,5],liabilities:[5,5]}),created:new Date().toISOString()});
+        imported++;
+      } else errors++;
+    });
+    saveData();
+    renderAll();
+    let summary='<p style="color:#059669">✅ Импортировано: '+imported+(errors?', пропущено: '+errors:'')+'</p>';
+    if(unknownTags.size){
+      summary+='<div style="background:#fff3e0;border-radius:6px;padding:8px;margin-top:8px;font-size:12px"><strong>⚠️ Неизвестные теги</strong> (не найдены в таксономии):<br>'+[...unknownTags].join(', ')+'<br><span style="color:#999">При редактировании можно выбрать из списка или добавить свой вариант.</span></div>';
+    }
+    const allMatches=findMatches();
+    if(allMatches.length){
+      summary+='<div style="margin-top:12px"><strong>🤝 Найдено стыковок: '+allMatches.length+'</strong></div>';
+      summary+='<div style="max-height:300px;overflow-y:auto;margin-top:6px">'+allMatches.slice(0,20).map(m=>{
+        const a=DATA.find(x=>x.id===m.from), b=DATA.find(x=>x.id===m.to);
+        if(!a||!b) return '';
+        const hasConn=CONNECTIONS.some(c=>(c.from===m.from&&c.to===m.to)||(c.from===m.to&&c.to===m.from));
+        return '<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-bottom:1px solid #f0f0f0;font-size:12px">'+
+          '<span style="flex:1"><b>'+a.name+'</b> ↔ <b>'+b.name+'</b></span>'+
+          '<span style="color:#2e7d32">'+m.tags.join(', ')+'</span>'+
+          (hasConn?'<span style="color:#999;font-size:11px">🔗 связь есть</span>':'<button class="btn-secondary" style="font-size:10px;padding:2px 8px" onclick="quickConnect('+m.from+','+m.to+');this.outerHTML=\'<span style=\\\'color:#999;font-size:11px\\\'>🔗 связь создана</span>\'">🔗 Связать</button>')+
+        '</div>';
+      }).join('')+'</div>';
+      if(allMatches.length>20) summary+='<div style="font-size:12px;color:#999;margin-top:4px">...и ещё '+(allMatches.length-20)+' стыковок</div>';
+      summary+='<button class="btn-outline" style="margin-top:8px" onclick="switchView(\'graph\',document.querySelectorAll(\'.card .tabs .tab\')[2])">🌐 Посмотреть на графе</button>';
+    }
+    document.getElementById('importResult').innerHTML=summary;
+    notify('📥 Импортировано '+imported+' человек');
+  };
+  reader.readAsText(file,'UTF-8');
+  e.target.value='';
+}
+
+function quickConnect(a,b) {
+  const exists=CONNECTIONS.some(c=>(c.from===a&&c.to===b)||(c.from===b&&c.to===a));
+  if(!exists){CONNECTIONS.push({from:a,to:b,zone:0});saveData();renderGraph();}
+}
+
+// Dashboard
+function renderDashboard() {
+  // Summary cards
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+  const newPeople = DATA.filter(p => p.created >= monthStart).length;
+  const allTouches = DATA.reduce((s,p) => s + (p.touches||[]).length, 0);
+  const activeProjs = PROJECTS.filter(p => p.stage !== 'done' && p.stage !== 'frozen').length;
+  const totalDeals = DEALS.length;
+  const ns = networkStats();
+  const avgScore = DATA.length ? Math.round(ns.networkScore / DATA.length) : 0;
+  document.getElementById('dbSummary').innerHTML =
+    '<div class="db-card"><div class="db-num">'+DATA.length+'</div><div class="db-label">👥 Участников</div></div>'+
+    '<div class="db-card"><div class="db-num" style="color:#2563eb">+'+newPeople+'</div><div class="db-label">📅 Новых за месяц</div></div>'+
+    '<div class="db-card"><div class="db-num" style="color:#059669">'+ns.totalMessages+'</div><div class="db-label">💬 Сообщений</div></div>'+
+    '<div class="db-card"><div class="db-num" style="color:#8b5cf6">'+(ns.totalDealRooms+ns.totalProjectRooms)+'</div><div class="db-label">🏠 Комнат</div></div>'+
+    '<div class="db-card"><div class="db-num" style="color:#d97706">'+ns.totalBoardPosts+'</div><div class="db-label">📢 Предложений</div></div>'+
+    '<div class="db-card" style="grid-column:1/-1;background:linear-gradient(135deg,#f0f4ff,#eef2ff);border:1px solid #c7d2fe"><div class="db-num" style="color:#4f46e5;font-size:28px">'+ns.networkScore+'</div><div class="db-label">🌐 Скор сети (средний '+avgScore+')</div></div>';
+
+  // Zone distribution
+  const zoneCounts = [0,0,0,0,0,0];
+  DATA.forEach(p => { const z = p.zone||2; if (z>=0 && z<6) zoneCounts[z]++; });
+  const zMax = Math.max(...zoneCounts, 1);
+  const colorMap = ['#9b59b6','#3498db','#2ecc71','#e67e22','#f1c40f','#95a5a6'];
+  document.getElementById('dbZoneChart').innerHTML = zoneCounts.map((c,i) => {
+    const h = (c/zMax*180);
+    return '<div class="db-bar" style="height:'+h+'px;background:'+colorMap[i]+';opacity:'+(0.3+0.7*c/zMax)+'"><div class="db-bar-label">'+ZONES[i].k.toUpperCase()+'<br><strong>'+c+'</strong></div></div>';
+  }).join('')+'<div style="width:100%;text-align:center;font-size:10px;color:#999;margin-top:24px">← ближние / дальние →</div>';
+
+  // Touches by month
+  const touchMonths = {};
+  DATA.forEach(p => (p.touches||[]).forEach(t => {
+    if (!t.date) return;
+    const m = t.date.slice(0,7);
+    touchMonths[m] = (touchMonths[m]||0) + 1;
+  }));
+  const months = Object.keys(touchMonths).sort();
+  const tMax = Math.max(...Object.values(touchMonths), 1);
+  document.getElementById('dbTouchChart').innerHTML = months.length
+    ? months.map(m => {
+        const c = touchMonths[m];
+        return '<div class="db-bar" style="height:'+(c/tMax*170)+'px;background:#2563eb"><div class="db-bar-label">'+m.slice(5)+'<br><strong>'+c+'</strong></div></div>';
+      }).join('')
+    : '<div style="width:100%;text-align:center;color:#999;font-size:13px;padding:40px 0">Пока нет касаний</div>';
+
+  // Funnel
+  const funnel = DEAL_STATUSES.map(s => DEALS.filter(d => d.status === s.id).length);
+  const fMax = Math.max(...funnel, 1);
+  document.getElementById('dbFunnel').innerHTML = DEAL_STATUSES.map((s,i) => {
+    const c = funnel[i];
+    return '<div class="db-funnel-item" style="background:'+s.color+';border:1px solid '+s.border+'"><strong>'+c+'</strong><br><span style="font-size:11px">'+s.label+'</span></div>'+
+      (i < DEAL_STATUSES.length-1 ? '<span style="color:#ccc;font-size:18px">→</span>' : '');
+  }).join('');
+
+  // Recent activity from notifications
+  const activities = [];
+  NOTIFICATIONS.forEach(n => {
+    const icon = getNotifIcon(n.type);
+    activities.push({date: n.createdAt, text: n.title + ' — ' + n.text, icon});
+  });
+  DATA.forEach(p => (p.touches||[]).forEach(t => {
+    activities.push({type:'touch',date:t.date||'',person:p.name,personId:p.id,detail:t.topic||t.type,icon:{Встреча:'🤝',Звонок:'📞',Email:'📧',Telegram:'✈️',Мероприятие:'🎪',Другое:'📌'}[t.type]||'📌'});
+  }));
+  DEALS.forEach(d => {
+    const per = DATA.find(p => p.id === d.personId);
+    activities.push({type:'deal',date:d.created||'',person:per?per.name:'—',personId:d.personId,detail:'Сделка: '+d.name,icon:'💰'});
+  });
+  activities.sort((a,b) => (b.date||'').localeCompare(a.date||''));
+  const recent = activities.slice(0,12);
+  document.getElementById('dbActivity').innerHTML = recent.length
+    ? recent.map(a => {
+        const perLink = a.person ? '<a href="#" onclick="showDetail('+a.personId+');return false" style="color:#1a1a2e;font-weight:500">'+escHtml(a.person)+'</a> ' : '';
+        return '<div class="db-activity"><span class="db-activity-icon">'+a.icon+'</span><span class="db-activity-body">'+perLink+escHtml(a.detail||a.text||'')+'</span><span class="db-activity-date">'+(a.date?.slice(0,10)||'')+'</span></div>';
+      }).join('')
+    : '<div style="color:#999;font-size:13px;padding:20px 0;text-align:center">Активностей пока нет</div>';
+}
+
+// Deals / Kanban
+function renderKanban() {
+  const board = document.getElementById('kanbanBoard');
+  board.innerHTML = DEAL_STATUSES.map(s => {
+    const deals = DEALS.filter(d => d.status === s.id);
+    return '<div class="kb-col" style="border-top:3px solid '+s.border+'">'+
+      '<h4>'+s.label+' <span style="color:#999;font-weight:400">('+deals.length+')</span></h4>'+
+      deals.map(d => {
+        const per = DATA.find(p => p.id === d.personId);
+        return '<div class="kb-card" onclick="showDealDetail('+d.id+')">'+
+          '<div class="kb-card-name">'+escHtml(d.name)+'</div>'+
+          '<div class="kb-card-meta">'+(d.amount?escHtml(d.amount):'')+'</div>'+
+          (per?'<div class="kb-card-person">'+escHtml(per.name)+'</div>':'')+
+          '<div style="margin-top:4px;display:flex;gap:4px">'+
+          (s.id !== DEAL_STATUSES[0].id ? '<span class="kb-col-arrow" onclick="event.stopPropagation();moveDeal('+d.id+',-1)">◀</span>' : '')+
+          (s.id !== DEAL_STATUSES[DEAL_STATUSES.length-1].id ? '<span class="kb-col-arrow" onclick="event.stopPropagation();moveDeal('+d.id+',1)">▶</span>' : '')+
+          '</div>'+
+        '</div>';
+      }).join('')+
+      (deals.length===0?'<div style="text-align:center;color:#ccc;font-size:11px;padding:12px 0">—</div>':'')+
+    '</div>';
+  }).join('');
+}
+
+function moveDeal(id, dir) {
+  const d = DEALS.find(x => x.id === id);
+  if (!d) return;
+  const idx = DEAL_STATUSES.findIndex(s => s.id === d.status);
+  const next = idx + dir;
+  if (next < 0 || next >= DEAL_STATUSES.length) return;
+  d.status = DEAL_STATUSES[next].id;
+  saveData();
+  renderKanban();
+  renderDashboard();
+}
+
+function showDealForm(editId) {
+  const d = editId ? DEALS.find(x => x.id === editId) : null;
+  const today = new Date().toISOString().slice(0,10);
+  const modal = document.getElementById('detailContent');
+  modal.innerHTML =
+    '<button class="modal-close" onclick="closeDetail()">×</button>'+
+    '<h2 style="margin-bottom:16px">'+(d?'✏️ Редактировать сделку':'💰 Новая сделка')+'</h2>'+
+    '<input type="hidden" id="dealEditId" value="'+(d?d.id:'')+'">'+
+    '<div class="form-row"><label>Название сделки *</label><input id="dealName" value="'+(d?escHtml(d.name):'')+'" placeholder="Партнёрство с..." style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px"></div>'+
+    '<div class="form-row"><label>Связанный участник</label><select id="dealPerson" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px">'+
+      '<option value="">— не связан —</option>'+
+      DATA.sort((a,b)=>a.name.localeCompare(b.name)).map(p => '<option value="'+p.id+'"'+(d && d.personId === p.id?' selected':'')+'>'+escHtml(p.name)+'</option>').join('')+
+    '</select></div>'+
+    '<div class="form-row-inline">'+
+      '<div class="form-row"><label>Сумма / бюджет</label><input id="dealAmount" value="'+(d?escHtml(d.amount||''):'')+'" placeholder="1.5 млн" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px"></div>'+
+      '<div class="form-row"><label>Статус</label><select id="dealStatus" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px">'+
+        DEAL_STATUSES.map((s,i) => '<option value="'+s.id+'"'+(d && d.status === s.id?' selected':'')+'>'+s.label+'</option>').join('')+
+      '</select></div>'+
+    '</div>'+
+    '<div class="form-row"><label>Описание</label><textarea id="dealDesc" placeholder="Детали сделки..." style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px;min-height:60px;resize:vertical">'+(d?escHtml(d.desc||''):'')+'</textarea></div>'+
+    '<div style="display:flex;gap:8px;margin-top:16px">'+
+      '<button class="btn-primary" onclick="saveDeal()">'+(d?'💾 Сохранить':'➕ Создать сделку')+'</button>'+
+      (d && d.status === 'contract' ? '<button class="btn-outline" onclick="dealToProject('+d.id+')">📋 В проект</button>' : '')+
+    '</div>';
+  document.getElementById('detailModal').classList.add('show');
+}
+
+function saveDeal() {
+  const name = document.getElementById('dealName').value.trim();
+  if (!name) { notify('Введите название сделки','error'); return; }
+  const editId = document.getElementById('dealEditId').value;
+  const isNew = !editId;
+  const d = isNew ? {} : DEALS.find(x => x.id == +editId) || {};
+  d.name = name;
+  d.personId = +document.getElementById('dealPerson').value || null;
+  d.amount = document.getElementById('dealAmount').value.trim();
+  d.status = document.getElementById('dealStatus').value;
+  d.desc = document.getElementById('dealDesc').value.trim();
+  if (isNew) { d.id = dealIdCounter++; d.created = new Date().toISOString(); DEALS.push(d); }
+  closeDetail();
+  saveData();
+  notify(isNew ? '✅ Сделка «'+name+'» создана' : '✏️ Сделка обновлена');
+}
+
+function showDealDetail(id) {
+  const d = DEALS.find(x => x.id === id);
+  if (!d) return;
+  const s = DEAL_STATUSES.find(x => x.id === d.status) || DEAL_STATUSES[0];
+  const per = DATA.find(p => p.id === d.personId);
+  const modal = document.getElementById('detailContent');
+  modal.innerHTML =
+    '<button class="modal-close" onclick="closeDetail()">×</button>'+
+    '<h2 style="margin-bottom:4px">💰 '+escHtml(d.name)+'</h2>'+
+    '<span style="display:inline-block;padding:3px 12px;border-radius:10px;font-size:13px;font-weight:600;background:'+s.color+';border:1px solid '+s.border+'">'+s.label+'</span>'+
+    '<div class="detail-grid">'+
+    (per ? '<div class="detail-item"><h4>Участник</h4><p><a href="#" onclick="closeDetail();showDetail('+per.id+');return false" style="color:#1a1a2e;font-weight:500">'+escHtml(per.name)+'</a></p></div>' : '')+
+    (d.amount ? '<div class="detail-item"><h4>Сумма</h4><p>💰 '+escHtml(d.amount)+'</p></div>' : '')+
+    (d.created ? '<div class="detail-item"><h4>Дата создания</h4><p>'+d.created.slice(0,10)+'</p></div>' : '')+
+    (d.desc ? '<div class="detail-item" style="grid-column:1/-1"><h4>Описание</h4><p>'+escHtml(d.desc)+'</p></div>' : '')+
+    '</div>'+
+    '<div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">'+
+      '<button class="btn-secondary" onclick="closeDetail();showDealForm('+d.id+')">✏️ Редактировать</button>'+
+      (d.status === 'contract' ? '<button class="btn-outline" onclick="closeDetail();dealToProject('+d.id+')">📋 Создать проект из сделки</button>' : '')+
+      '<button class="btn-danger" onclick="closeDetail();deleteDeal('+d.id+')">🗑️ Удалить</button>'+
+    '</div>';
+  document.getElementById('detailModal').classList.add('show');
+}
+
+function deleteDeal(id) {
+  const d = DEALS.find(x => x.id === id);
+  if (!d || !confirm('Удалить сделку «'+d.name+'»?')) return;
+  DEALS = DEALS.filter(x => x.id !== id);
+  saveData();
+  notify('🗑️ Сделка удалена');
+  renderKanban();
+}
+
+function dealToProject(id) {
+  const d = DEALS.find(x => x.id === id);
+  if (!d) return;
+  const name = d.name;
+  const personId = d.personId;
+  const proj = { id:projIdCounter++, name:name, stage:'start', budget:d.amount, area:'', type:'', location:'', startDate:'', endDate:'', description:d.desc||'', people:personId?[personId]:[], created:new Date().toISOString() };
+  PROJECTS.push(proj);
+  saveData();
+  notify('📋 Из сделки создан проект «'+name+'»');
+  renderKanban();
+  renderProjectsList();
+}
+
+// AI Digest
+function renderAiDigest() {
+  const today = new Date();
+  const todayStr = today.toISOString().slice(0,10);
+  const weekAgo = new Date(today.getTime() - 7*86400000).toISOString();
+
+  // Overdue follow-ups
+  const overdue = [];
+  DATA.forEach(p => (p.touches||[]).forEach(t => {
+    if (t.nextStep && t.date) {
+      const d = new Date(t.date);
+      const daysSince = Math.floor((today - d)/86400000);
+      if (daysSince > 14 && !t._done) {
+        overdue.push({person:p, personId:p.id, touch:t, daysSince});
+      }
+    }
+  }));
+  overdue.sort((a,b) => b.daysSince - a.daysSince);
+  document.getElementById('aiOverdue').innerHTML = overdue.length
+    ? overdue.slice(0,10).map(o =>
+        '<div class="db-activity" style="border-left:3px solid #dc2626">'+
+          '<span class="db-activity-icon">⏰</span>'+
+          '<span class="db-activity-body">'+
+            '<a href="#" onclick="showDetail('+o.personId+');return false" style="color:#1a1a2e;font-weight:500">'+escHtml(o.person.name)+'</a> '+
+            '<span style="color:#999">— '+escHtml(o.touch.nextStep)+'</span>'+
+          '</span>'+
+          '<span style="font-size:11px;color:#dc2626;font-weight:600">'+o.daysSince+' дн.</span>'+
+        '</div>'
+      ).join('')
+    : '<div style="color:#059669;padding:20px;text-align:center">✅ Все follow-up в порядке</div>';
+
+  // Hotspots: people with no touches in 30+ days, deals stuck in lead
+  const hot = [];
+  DATA.forEach(p => {
+    const touches = p.touches||[];
+    const lastTouch = touches.length ? Math.max(...touches.map(t => new Date(t.date||0).getTime())) : 0;
+    const daysSilent = Math.floor((today.getTime() - lastTouch)/86400000);
+    if (touches.length > 0 && daysSilent > 30 && daysSilent < 9999) {
+      hot.push({type:'silent', person:p, detail:'Нет касаний '+daysSilent+' дн.', icon:'🔇'});
+    }
+  });
+  DEALS.forEach(d => {
+    if (d.status === 'lead') {
+      const days = Math.floor((today.getTime() - new Date(d.created||today).getTime())/86400000);
+      if (days > 14) {
+        const per = DATA.find(p => p.id === d.personId);
+        hot.push({type:'stuck', person:per, detail:'Сделка «'+d.name+'» в Лиде '+days+' дн.', icon:''});
+      }
+    }
+  });
+  document.getElementById('aiHotspots').innerHTML = hot.length
+    ? hot.slice(0,8).map(h =>
+        '<div class="db-activity">'+
+          '<span class="db-activity-icon">'+(h.icon||'')+'</span>'+
+          '<span class="db-activity-body">'+
+            (h.person?'<a href="#" onclick="showDetail('+h.person.id+');return false" style="color:#1a1a2e;font-weight:500">'+escHtml(h.person.name)+'</a> — ':'')+
+            '<span style="color:#666">'+h.detail+'</span>'+
+          '</span>'+
+        '</div>'
+      ).join('')
+    : '<div style="color:#059669;padding:20px;text-align:center">🔥 Горячих точек нет</div>';
+
+  // Recommendations
+  const recs = [];
+  // New people without welcome touch
+  DATA.forEach(p => {
+    if (!p.touches || !p.touches.length) {
+      recs.push('➕ Добавить приветственное касание для <a href="#" onclick="showDetail('+p.id+');return false" style="color:#2563eb;font-weight:500">'+escHtml(p.name)+'</a>');
+    }
+  });
+  // Deals stuck in negotiation
+  DEALS.forEach(d => {
+    if (d.status === 'negotiation') {
+      const per = DATA.find(p => p.id === d.personId);
+      recs.push('💬 Сделка «'+escHtml(d.name)+'»'+(per?' с '+escHtml(per.name):'')+' давно в переговорах — предложить следующий шаг');
+    }
+  });
+  // Projects without participants
+  PROJECTS.forEach(p => {
+    if (!p.people || !p.people.length) {
+      recs.push('📋 Проект «'+escHtml(p.name)+'» без участников — назначить команду');
+    }
+  });
+  // People without competency tags
+  DATA.forEach(p => {
+    if (!p.competencies && !p.requests) {
+      recs.push('🎯 У <a href="#" onclick="showDetail('+p.id+');return false" style="color:#2563eb;font-weight:500">'+escHtml(p.name)+'</a> не заполнены «Что предлагаю» / «Что ищу»');
+    }
+  });
+  document.getElementById('aiRecommendations').innerHTML = recs.length
+    ? recs.map(r => '<div class="db-activity"><span class="db-activity-icon">💡</span><span class="db-activity-body">'+r+'</span></div>').join('')
+    : '<div style="color:#059669;padding:20px;text-align:center">✨ Система чиста, рекомендаций нет</div>';
+
+  // Trends
+  const weekOld = new Date(today.getTime() - 7*86400000);
+  const newThisWeek = DATA.filter(p => p.created && new Date(p.created) > weekOld).length;
+  const touchesThisWeek = DATA.reduce((s,p) => s + (p.touches||[]).filter(t => t.date && new Date(t.date) > weekOld).length, 0);
+  const dealsThisWeek = DEALS.filter(d => d.created && new Date(d.created) > weekOld).length;
+  const zoneDist = [0,0,0,0,0,0];
+  DATA.forEach(p => { const z=p.zone||2; if(z>=0&&z<6) zoneDist[z]++; });
+  const strongestZone = zoneDist.indexOf(Math.max(...zoneDist));
+  document.getElementById('aiTrends').innerHTML =
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:12px">'+
+      '<div style="background:#f8f9fa;border-radius:8px;padding:12px;text-align:center"><div style="font-size:24px;font-weight:700;color:#2563eb">+'+newThisWeek+'</div><div style="font-size:11px;color:#666">новых за неделю</div></div>'+
+      '<div style="background:#f8f9fa;border-radius:8px;padding:12px;text-align:center"><div style="font-size:24px;font-weight:700;color:#059669">'+touchesThisWeek+'</div><div style="font-size:11px;color:#666">касаний за неделю</div></div>'+
+      '<div style="background:#f8f9fa;border-radius:8px;padding:12px;text-align:center"><div style="font-size:24px;font-weight:700;color:#8b5cf6">'+dealsThisWeek+'</div><div style="font-size:11px;color:#666">новых сделок</div></div>'+
+      '<div style="background:#f8f9fa;border-radius:8px;padding:12px;text-align:center"><div style="font-size:24px;font-weight:700;color:#d97706">'+PROJECTS.length+'</div><div style="font-size:11px;color:#666">всего проектов</div></div>'+
+    '</div>'+
+    '<p style="font-size:13px;color:#666;padding:8px;background:#f8f9fa;border-radius:8px"><strong>📊 Распределение:</strong> больше всего участников в зоне <strong>'+ZONES[strongestZone].name+'</strong> ('+zoneDist[strongestZone]+' чел.)'+
+    (touchesThisWeek===0 ? '<br><span style="color:#dc2626">⚠️ За неделю не было касаний — экосистема затухает</span>' : '')+
+    '</p>';
+}
+
+// Sync
+function prepExportToOnto() {
+  const json=JSON.stringify(DATA,null,2);
+  document.getElementById('syncBlock').innerHTML=
+    '<h3>📤 Экспорт в Onto</h3><p style="font-size:13px;color:#666;margin:8px 0">Скопируй JSON и отправь в чат — я загружу в графовую базу.</p>'+
+    '<div style="background:#f8f9fa;border-radius:8px;padding:12px"><textarea style="width:100%;min-height:200px;border:none;background:transparent;font-size:11px;font-family:monospace" readonly id="exportJson"></textarea></div>'+
+    '<div style="display:flex;gap:8px;margin-top:8px"><button class="btn-secondary" onclick="(function(){document.getElementById(\'exportJson\').select();navigator.clipboard?.writeText(document.getElementById(\'exportJson\').value);notify(\'📋 Скопировано\')})()">📋 Копировать</button></div>';
+  document.getElementById('exportJson').value=json;
+  switchView('sync', document.querySelector('.card .tabs:last-child .tab:last-child'));
+}
+
+function prepImportFromOnto() {
+  document.getElementById('syncBlock').innerHTML=
+    '<h3>📥 Импорт из Onto</h3><p style="font-size:13px;color:#666;margin:8px 0">Попроси меня выгрузить данные из Onto — вставь JSON сюда и нажми "Загрузить".</p>'+
+    '<textarea id="importJson" style="width:100%;min-height:200px;border:1px solid #ddd;border-radius:8px;padding:12px;font-size:11px;font-family:monospace" placeholder="Вставь JSON от AI сюда..."></textarea>'+
+    '<button class="btn-primary" style="margin-top:8px" onclick="doImportFromOnto()">📥 Загрузить в приложение</button><div id="importOntoResult" style="margin-top:8px;font-size:13px"></div>';
+  switchView('sync', document.querySelector('.card .tabs:last-child .tab:last-child'));
+}
+
+function doImportFromOnto() {
+  try {
+    const data=JSON.parse(document.getElementById('importJson').value);
+    if (!Array.isArray(data)) throw new Error('Нужен массив');
+    data.forEach(p=>{ if (!p.id) p.id=idCounter++; if (p.zone===undefined) p.zone=calcPersonZone(p); if (!p.created) p.created=new Date().toISOString(); DATA.push(p); });
+    saveData();
+    document.getElementById('importOntoResult').innerHTML='<p style="color:#059669">✅ Загружено '+data.length+' человек</p>';
+    notify('📥 Загружено '+data.length+' из Onto');
+  } catch(e) { notify('Ошибка: '+e.message,'error'); }
+}
+
+// Tag selector functions
+function escHtml(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function getTg(type, which) { return document.getElementById(which==='selector'?(type==='comp'?'compSelector':'reqSelector'):which==='chips'?(type==='comp'?'compChips':'reqChips'):(type==='comp'?'fCompetencies':'fRequests')); }
+function renderTagSelectors() {
+  ['comp','req'].forEach(type => {
+    const input=getTg(type,'input'), selector=getTg(type,'selector'), chips=getTg(type,'chips');
+    if(!input||!selector||!chips) return;
+    const tags=(input.value||'').split(',').map(t=>t.trim()).filter(t=>t);
+    const lt=tags.map(t=>t.toLowerCase());
+    chips.innerHTML=tags.map(t=>'<span class="tag-chip '+type+'">'+escHtml(t)+' <span class="tag-remove" data-type="'+type+'" data-tag="'+escHtml(t)+'">×</span></span>').join('');
+    selector.innerHTML=TAXONOMY.map(g=>'<div class="group-label" data-type="'+type+'" data-group="'+escHtml(g.group)+'">'+escHtml(g.group)+'</div><div class="tag-group" data-group="'+escHtml(g.group)+'">'+g.tags.map(t=>'<span class="tag-btn'+(lt.includes(t.toLowerCase())?' active':'')+'" data-type="'+type+'" data-tag="'+escHtml(t)+'">'+escHtml(t)+'</span>').join('')+'</div>').join('');
+    selector.insertAdjacentHTML('beforeend','<span class="tag-custom-add" data-type="'+type+'">+ Свой вариант</span>');
+  });
+}
+function toggleTag(type, tag) {
+  const input=getTg(type,'input'), tags=(input.value||'').split(',').map(t=>t.trim()).filter(t=>t);
+  const lt=tags.map(t=>t.toLowerCase()); const i=lt.indexOf(tag.toLowerCase());
+  if(i>=0) tags.splice(i,1); else tags.push(tag);
+  input.value=tags.join(', '); renderTagSelectors();
+}
+function removeTag(type, tag) {
+  const input=getTg(type,'input'), tags=(input.value||'').split(',').map(t=>t.trim()).filter(t=>t);
+  const lt=tags.map(t=>t.toLowerCase()); const i=lt.indexOf(tag.toLowerCase());
+  if(i>=0){tags.splice(i,1);input.value=tags.join(', ');renderTagSelectors();}
+}
+function addTag(type, tag) {
+  const input=getTg(type,'input'), tags=(input.value||'').split(',').map(t=>t.trim()).filter(t=>t);
+  const lt=tags.map(t=>t.toLowerCase());
+  if(!lt.includes(tag.toLowerCase())){tags.push(tag);input.value=tags.join(', ');renderTagSelectors();}
+}
+function showCustomTagInput(type) {
+  const selector=getTg(type,'selector'), div=document.createElement('span');
+  div.className='tag-custom-input';
+  div.innerHTML='<input type="text" class="tag-custom-text" placeholder="Свой вариант..." style="width:140px"> <button class="tag-custom-confirm" data-type="'+type+'">✓</button> <button class="tag-custom-cancel">✕</button>';
+  const addBtn=selector.querySelector('.tag-custom-add');
+  if(addBtn) addBtn.replaceWith(div);
+  div.querySelector('input').focus();
+}
+document.addEventListener('click', function(e) {
+  const t=e.target;
+  if(t.classList.contains('group-label')){
+    const type=t.dataset.type, group=t.dataset.group;
+    const sel=document.getElementById(type==='comp'?'compSelector':'reqSelector');
+    const label=sel.querySelector('.group-label[data-group="'+group+'"]');
+    const grp=sel.querySelector('.tag-group[data-group="'+group+'"]');
+    if(label&&grp){label.classList.toggle('open');grp.classList.toggle('open');}
+    e.preventDefault();return;
+  }
+  if(t.classList.contains('tag-btn')){toggleTag(t.dataset.type,t.dataset.tag);e.preventDefault();return;}
+  if(t.classList.contains('tag-remove')){removeTag(t.dataset.type,t.dataset.tag);e.preventDefault();return;}
+  if(t.classList.contains('tag-custom-add')){showCustomTagInput(t.dataset.type);e.preventDefault();return;}
+  if(t.classList.contains('tag-custom-confirm')){
+    const c=t.closest('.tag-custom-input'),inp=c.querySelector('input');
+    if(inp&&inp.value.trim()){addTag(t.dataset.type,inp.value.trim());c.remove();renderTagSelectors();}
+    e.preventDefault();return;
+  }
+  if(t.classList.contains('tag-custom-cancel')){t.closest('.tag-custom-input').remove();e.preventDefault();return;}
+});
+document.addEventListener('keydown', function(e) {
+  if(e.key==='Enter'&&e.target.classList.contains('tag-custom-text')){
+    const c=e.target.closest('.tag-custom-input');
+    if(c&&e.target.value.trim()){addTag(c.querySelector('.tag-custom-confirm').dataset.type,e.target.value.trim());c.remove();renderTagSelectors();}
+    e.preventDefault();
+  }
+});
+
+
+// Board — Bulletin Board
+const BOARD_CATEGORIES = [
+  { id: 'podryadchik', label: '🏗️ Подрядчик' },
+  { id: 'investor', label: '💰 Инвестор' },
+  { id: 'technology', label: '⚙️ Технология' },
+  { id: 'uchastok', label: '📍 Участок / Объект' },
+  { id: 'partner', label: '🤝 Партнёр' },
+  { id: 'other', label: '📌 Другое' },
+];
+
+function setBoardFilter(f, btn) {
+  boardFilter = f;
+  document.querySelectorAll('#boardFilter .tab').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderBoard();
+}
+
+function renderBoard() {
+  const el = document.getElementById('boardList');
+  const items = BOARD_ITEMS.filter(b => boardFilter === 'all' || b.type === boardFilter).sort((a, b) => (b.createdAt||'').localeCompare(a.createdAt||''));
+  if (!items.length) {
+    el.innerHTML = '<div style="text-align:center;padding:40px 20px;color:#94a3b8"><div style="font-size:40px;margin-bottom:12px">🤝</div><p style="font-size:14px;font-weight:500;color:#6b7280">Пока нет предложений</p><p style="font-size:12px;margin-top:4px">Разместите первое предложение</p></div>';
+    return;
+  }
+  el.innerHTML = items.map(b => {
+    const author = DATA.find(p => p.id === b.authorId);
+    const za = ZONES[author?.zone || 2];
+    const typeColor = b.type === 'ищу' ? '#059669' : '#dc2626';
+    const typeBg = b.type === 'ищу' ? '#ecfdf5' : '#fef2f2';
+    const typeIcon = b.type === 'ищу' ? '🟢' : '🔴';
+    const catLabel = BOARD_CATEGORIES.find(c => c.id === b.category)?.label || b.category;
+    const truncated = b.description.length > 120;
+    return '<div style="background:var(--surface);border:1px solid #eef2f6;border-radius:12px;padding:16px;margin-bottom:10px;transition:var(--transition)">' +
+      '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px">' +
+        '<div style="display:flex;align-items:center;gap:8px">' +
+          (author ? '<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:'+(za?.color||'#95a5a6')+'20;font-size:12px">👤</span>' : '') +
+          '<div><span style="font-size:13px;font-weight:600;color:#0f1825;cursor:pointer" onclick="showDetail('+b.authorId+')">' + escHtml(author?.name||'—') + '</span>' +
+          '<span style="font-size:10px;color:#94a3b8;margin-left:8px">' + (b.createdAt||'').slice(0,10) + '</span></div></div>' +
+        '<div style="display:flex;gap:4px;flex-shrink:0">' +
+          '<span style="font-size:10px;padding:3px 8px;border-radius:6px;font-weight:600;background:'+typeBg+';color:'+typeColor+'">' + typeIcon + ' ' + b.type + '</span>' +
+          '<span style="font-size:10px;padding:3px 8px;border-radius:6px;font-weight:500;background:#f3f4f8;color:#6b7280">' + catLabel + '</span></div></div>' +
+      '<h3 style="font-size:14px;font-weight:600;color:#0f1825;margin-bottom:4px">' + escHtml(b.title) + '</h3>' +
+      '<p style="font-size:12px;color:#6b7280;line-height:1.5;margin-bottom:8px">' + (truncated ? escHtml(b.description).slice(0,120) + '... <a href="#" onclick="this.parentElement.innerHTML=\'' + escHtml(b.description).replace(/'/g,"\\'") + '\';return false" style="color:#2563eb;font-size:11px">показать ещё</a>' : escHtml(b.description)) + '</p>' +
+      (b.tags && b.tags.length ? '<div style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:8px">' + b.tags.map(t => '<span style="font-size:10px;padding:2px 8px;border-radius:6px;background:#f3f4f8;color:#6b7280;font-weight:500">' + escHtml(t) + '</span>').join('') + '</div>' : '') +
+      '<div style="display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:1px solid #eef2f6">' +
+        '<span style="font-size:11px;color:#94a3b8">📩 ' + (b.responses?.length||0) + ' откликов</span>' +
+        '<div style="display:flex;gap:6px">' +
+          (b.status === 'active'
+            ? '<button class="btn-secondary" style="font-size:10px;padding:4px 12px" onclick="showResponseForm(' + b.id + ')">📩 Откликнуться</button>'
+            : '<span style="font-size:10px;padding:4px 10px;border-radius:6px;background:#f3f4f8;color:#94a3b8">🔒 Закрыто</span>') +
+          (b.authorId === getCurrentUserId() || b.authorId === undefined
+            ? '<button class="btn-danger" style="font-size:10px;padding:4px 10px" onclick="closeBoardItem(' + b.id + ')">✕</button>'
+            : '') +
+        '</div></div>' +
+      (b.responses && b.responses.length && (b.authorId === getCurrentUserId() || b.authorId === undefined)
+        ? '<div style="margin-top:10px;padding-top:10px;border-top:1px solid #eef2f6"><div style="font-size:11px;font-weight:600;color:#6b7280;margin-bottom:6px">📩 Отклики (' + b.responses.length + ')</div>' +
+          b.responses.map(r => {
+            const ra = DATA.find(p => p.id === r.authorId);
+            const hasRoom = DEAL_ROOMS.some(dr => dr.boardItemId === b.id && dr.participantId === r.authorId);
+            return '<div style="display:flex;gap:8px;align-items:center;padding:8px 10px;background:#f8f9fb;border-radius:8px;margin-bottom:4px;font-size:12px">' +
+              '<span style="font-weight:600;color:#0f1825;cursor:pointer" onclick="showDetail('+r.authorId+')">' + escHtml(ra?.name||'—') + '</span>' +
+              '<span style="color:#6b7280;flex:1">' + escHtml(r.text) + '</span>' +
+              '<span style="font-size:10px;color:#94a3b8">' + (r.createdAt||'').slice(0,10) + '</span>' +
+              ((b.authorId === getCurrentUserId() || b.authorId === undefined) && !hasRoom
+                ? '<button class="btn-secondary" style="font-size:10px;padding:3px 8px" onclick="createDealRoom('+b.id+','+r.authorId+')">💼 В сделку</button>'
+                : '') +
+            '</div>';
+          }).join('') + '</div>'
+        : '') +
+    '</div>';
+  }).join('');
+}
+
+function getCurrentUserId() {
+  const sel = document.getElementById('personSelector');
+  return sel ? (+sel.value || (DATA.length ? DATA[0].id : undefined)) : (DATA.length ? DATA[0].id : undefined);
+}
+
+function showBoardForm(editId) {
+  const b = editId ? BOARD_ITEMS.find(x => x.id === editId) : null;
+  document.getElementById('detailContent').innerHTML =
+    '<button class="modal-close" onclick="closeDetail()">×</button>' +
+    '<h2 style="margin-bottom:16px">' + (b ? '✏️ Редактировать' : '📝 Новое предложение') + '</h2>' +
+    '<input type="hidden" id="bfEditId" value="' + (b ? b.id : '') + '">' +
+    '<div class="form-row-inline">' +
+      '<div class="form-row"><label>Тип *</label><select id="bfType" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px;background:#fff">' +
+        '<option value="ищу"' + (b?.type === 'ищу' ? ' selected' : '') + '>🟢 Ищу</option>' +
+        '<option value="предлагаю"' + (b?.type === 'предлагаю' ? ' selected' : '') + '>🔴 Предлагаю</option></select></div>' +
+      '<div class="form-row"><label>Категория *</label><select id="bfCategory" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px;background:#fff">' +
+        BOARD_CATEGORIES.map(c => '<option value="' + c.id + '"' + (b?.category === c.id ? ' selected' : '') + '>' + c.label + '</option>').join('') +
+      '</select></div></div>' +
+    '<div class="form-row"><label>Заголовок *</label><input id="bfTitle" value="' + (b ? escHtml(b.title) : '') + '" placeholder="Кратко суть" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px"></div>' +
+    '<div class="form-row"><label>Описание</label><textarea id="bfDesc" placeholder="Подробности..." style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px;min-height:80px;resize:vertical">' + (b ? escHtml(b.desc||'') : '') + '</textarea></div>' +
+    '<div class="form-row"><label>Теги (из таксономии)</label><div id="bfTags" style="min-height:34px">' +
+      '<div style="display:flex;gap:6px;flex-wrap:wrap" id="bfTagChips"></div>' +
+      '<input id="bfTagInput" placeholder="Введите тег и нажмите Enter..." style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:12px;margin-top:6px">' +
+    '</div></div>' +
+    '<div style="display:flex;gap:8px;margin-top:16px">' +
+      '<button class="btn-primary" onclick="saveBoardItem()">' + (b ? '💾 Сохранить' : '📢 Опубликовать') + '</button>' +
+      '<button class="btn-secondary" onclick="closeDetail()">✕ Отмена</button></div>';
+  window._boardTags = b?.tags || [];
+  renderBoardTags();
+  document.getElementById('bfTagInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const v = this.value.trim();
+      if (v && !window._boardTags.includes(v)) { window._boardTags.push(v); renderBoardTags(); }
+      this.value = '';
+    }
+  });
+  document.getElementById('detailModal').classList.add('show');
+}
+
+function renderBoardTags() {
+  const el = document.getElementById('bfTagChips');
+  if (!el) return;
+  el.innerHTML = (window._boardTags||[]).map(t =>
+    '<span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#f3f4f8;border-radius:6px;font-size:11px;font-weight:500;color:#4b5563">' + escHtml(t) +
+    ' <span style="cursor:pointer;color:#9ca3af;font-size:13px" onclick="removeBoardTag(\'' + t.replace(/'/g,"\\'") + '\')">×</span></span>'
+  ).join('');
+}
+
+function removeBoardTag(t) {
+  const idx = (window._boardTags||[]).indexOf(t);
+  if (idx >= 0) { window._boardTags.splice(idx, 1); renderBoardTags(); }
+}
+
+function saveBoardItem() {
+  const title = document.getElementById('bfTitle').value.trim();
+  if (!title) { notify('Введите заголовок','error'); return; }
+  const editId = document.getElementById('bfEditId').value;
+  const isNew = !editId;
+  const b = isNew ? {} : BOARD_ITEMS.find(x => x.id == +editId) || {};
+  b.type = document.getElementById('bfType').value;
+  b.category = document.getElementById('bfCategory').value;
+  b.title = title;
+  b.description = document.getElementById('bfDesc').value.trim();
+  b.tags = window._boardTags || [];
+  if (isNew) {
+    b.id = boardIdCounter++;
+    b.authorId = getCurrentUserId();
+    b.createdAt = new Date().toISOString();
+    b.status = 'active';
+    b.responses = [];
+    BOARD_ITEMS.push(b);
+    // Match check
+    const comps = b.tags.length ? b.tags.map(t => t.toLowerCase()) : [];
+    const matches = DATA.filter(p => {
+      if (p.id === b.authorId) return false;
+      const pComp = parseTags(p.competencies);
+      const pReq = parseTags(p.requests);
+      const both = [...new Set([...pComp, ...pReq])];
+      return comps.some(t => both.includes(t));
+    });
+    if (matches.length) {
+      setTimeout(() => {
+        notify('🤝 Найдено ' + matches.length + ' участников с подходящими тегами');
+      }, 300);
+    }
+  }
+  closeDetail();
+  saveData();
+  renderBoard();
+  notify(isNew ? '✅ Предложение опубликовано' : '✏️ Предложение обновлено');
+}
+
+function showResponseForm(boardId) {
+  document.getElementById('detailContent').innerHTML =
+    '<button class="modal-close" onclick="closeDetail()">×</button>' +
+    '<h2 style="margin-bottom:16px">📩 Откликнуться</h2>' +
+    '<input type="hidden" id="respBoardId" value="' + boardId + '">' +
+    '<div class="form-row"><label>Ваше предложение / комментарий</label><textarea id="respText" placeholder="Расскажите, чем вы можете помочь или что предлагаете..." style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px;min-height:100px;resize:vertical"></textarea></div>' +
+    '<div style="display:flex;gap:8px;margin-top:16px">' +
+      '<button class="btn-primary" onclick="saveResponse()">📩 Отправить отклик</button>' +
+      '<button class="btn-secondary" onclick="closeDetail()">✕ Отмена</button></div>';
+  document.getElementById('detailModal').classList.add('show');
+}
+
+function saveResponse() {
+  const boardId = +document.getElementById('respBoardId').value;
+  const text = document.getElementById('respText').value.trim();
+  if (!text) { notify('Напишите текст отклика','error'); return; }
+  const b = BOARD_ITEMS.find(x => x.id === boardId);
+  if (!b) return;
+  if (!b.responses) b.responses = [];
+  const uid = getCurrentUserId();
+  b.responses.push({ id: Date.now(), authorId: uid, text, createdAt: new Date().toISOString() });
+  if (b.authorId && b.authorId !== uid) {
+    const resp = DATA.find(p => p.id === uid);
+    addNotification('board_response', boardId, '📩 Отклик на «' + b.title + '»', (resp?.name||'Кто-то') + ': ' + text, 'board');
+  }
+  closeDetail();
+  saveData();
+  notify('📩 Отклик отправлен');
+}
+
+function closeBoardItem(id) {
+  const b = BOARD_ITEMS.find(x => x.id === id);
+  if (!b || !confirm('Закрыть предложение «' + b.title + '»?')) return;
+  b.status = 'closed';
+  saveData();
+  notify('🔒 Предложение закрыто');
+}
+
+
+// Deal Rooms
+const DEAL_ROOM_STATUSES = [
+  { id: 'negotiation', label: '💬 Переговоры', color: '#2563eb', bg: '#eff6ff' },
+  { id: 'confirmation', label: '📝 Согласование', color: '#d97706', bg: '#fffbeb' },
+  { id: 'closed', label: '✅ Закрыто', color: '#059669', bg: '#ecfdf5' },
+];
+
+function setDealRoomFilter(f, btn) {
+  dealRoomFilter = f;
+  document.querySelectorAll('#dealRoomFilter .tab').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderDealRooms();
+}
+
+function renderDealRooms() {
+  const el = document.getElementById('dealRoomList');
+  const uid = getCurrentUserId();
+  const items = DEAL_ROOMS.filter(r => dealRoomFilter === 'all' || r.status === dealRoomFilter)
+    .filter(r => r.initiatorId === uid || r.participantId === uid)
+    .sort((a, b) => (b.updatedAt||'').localeCompare(a.updatedAt||''));
+  if (!items.length) {
+    el.innerHTML = '<div style="text-align:center;padding:40px 20px;color:#94a3b8"><div style="font-size:40px;margin-bottom:12px">💼</div><p style="font-size:14px;font-weight:500;color:#6b7280">Нет активных сделок</p><p style="font-size:12px;margin-top:4px">Откликнитесь на предложение или создайте своё</p></div>';
+    return;
+  }
+  el.innerHTML = items.map(r => {
+    const board = BOARD_ITEMS.find(b => b.id === r.boardItemId);
+    const otherId = r.initiatorId === uid ? r.participantId : r.initiatorId;
+    const other = DATA.find(p => p.id === otherId);
+    const st = DEAL_ROOM_STATUSES.find(s => s.id === r.status) || DEAL_ROOM_STATUSES[0];
+    const lastMsg = r.messages?.length ? r.messages[r.messages.length-1] : null;
+    const unread = r.messages?.filter(m => m.authorId !== uid && !m.read).length || 0;
+    return '<div class="deal-room-card" onclick="openDealRoom('+r.id+')" style="background:var(--surface);border:1px solid #eef2f6;border-radius:12px;padding:14px;margin-bottom:10px;cursor:pointer;transition:var(--transition)">' +
+      '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:6px">' +
+        '<div style="display:flex;align-items:center;gap:8px">' +
+          '<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:'+st.bg+';font-size:13px">👤</span>' +
+          '<div><span style="font-size:13px;font-weight:600;color:#0f1825">' + escHtml(other?.name||'—') + '</span>' +
+          '<span style="font-size:10px;color:#94a3b8;margin-left:8px">' + (r.createdAt||'').slice(0,10) + '</span></div></div>' +
+        '<div style="display:flex;gap:4px;align-items:center">' +
+          (unread ? '<span style="background:#dc2626;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;min-width:18px;text-align:center">'+unread+'</span>' : '') +
+          '<span style="font-size:10px;padding:3px 8px;border-radius:6px;font-weight:600;background:'+st.bg+';color:'+st.color+'">' + st.label + '</span></div></div>' +
+      '<div style="font-size:12px;color:#6b7280;margin-bottom:4px;display:flex;align-items:center;gap:6px">' +
+        '<span style="font-size:10px;color:#94a3b8">📌 ' + escHtml(board?.title||'—') + '</span></div>' +
+      (lastMsg ? '<div style="font-size:11px;color:#94a3b8;padding-top:6px;border-top:1px solid #eef2f6;margin-top:6px">' +
+        escHtml(lastMsg.text.slice(0,80)) + (lastMsg.text.length > 80 ? '...' : '') + '</div>' : '') +
+    '</div>';
+  }).join('');
+}
+
+function createDealRoom(boardItemId, participantId) {
+  const existing = DEAL_ROOMS.find(r => r.boardItemId === boardItemId && r.participantId === participantId);
+  if (existing) { notify('Комната уже существует'); return; }
+  const uid = getCurrentUserId();
+  const r = {
+    id: dealRoomIdCounter++,
+    boardItemId,
+    initiatorId: uid,
+    participantId,
+    status: 'negotiation',
+    messages: [],
+    agreements: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  DEAL_ROOMS.push(r);
+  const board = BOARD_ITEMS.find(b => b.id === boardItemId);
+  if (participantId !== uid) {
+    addNotification('deal_created', r.id, '💼 Создана комната сделки', 'По предложению «' + (board?.title||'') + '»', 'dealrooms', r.id);
+  }
+  saveData();
+  notify('💼 Комната сделки создана');
+  openDealRoom(r.id);
+}
+
+function openDealRoom(id) {
+  const r = DEAL_ROOMS.find(x => x.id === id);
+  if (!r) return;
+  const uid = getCurrentUserId();
+  // Mark messages as read
+  r.messages?.forEach(m => { if (m.authorId !== uid) m.read = true; });
+  const board = BOARD_ITEMS.find(b => b.id === r.boardItemId);
+  const otherId = r.initiatorId === uid ? r.participantId : r.initiatorId;
+  const other = DATA.find(p => p.id === otherId);
+  const st = DEAL_ROOM_STATUSES.find(s => s.id === r.status) || DEAL_ROOM_STATUSES[0];
+  const statusOpts = DEAL_ROOM_STATUSES.map(s =>
+    '<option value="'+s.id+'"'+(s.id===r.status?' selected':'')+'>'+s.label+'</option>'
+  ).join('');
+
+  document.getElementById('detailContent').innerHTML =
+    '<button class="modal-close" onclick="closeDetail()">×</button>' +
+    '<h2 style="margin-bottom:4px">💼 ' + escHtml(other?.name||'—') + '</h2>' +
+    '<div style="font-size:11px;color:#94a3b8;margin-bottom:12px">📌 ' + escHtml(board?.title||'') + '</div>' +
+    '<div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;padding:8px 12px;background:#f8f9fb;border-radius:8px">' +
+      '<span style="font-size:11px;color:#6b7280">Статус:</span>' +
+      '<select id="drStatus" style="flex:1;padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:12px;background:#fff" onchange="updateDealRoomStatus('+r.id+')">' + statusOpts + '</select>' +
+    '</div>' +
+    // Agreements section
+    '<div style="margin-bottom:12px">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">' +
+        '<span style="font-size:12px;font-weight:600;color:#0f1825">📋 Договорённости</span>' +
+        '<button class="btn-secondary" style="font-size:10px;padding:3px 10px" onclick="addAgreement('+r.id+')">➕ Добавить</button></div>' +
+      (r.agreements?.length
+        ? r.agreements.map(a => {
+            const aa = DATA.find(p => p.id === a.authorId);
+            return '<div style="display:flex;align-items:start;gap:8px;padding:8px 10px;background:#f8f9fb;border-radius:8px;margin-bottom:4px;font-size:12px">' +
+              '<span style="font-weight:600;color:#0f1825;flex-shrink:0">' + escHtml(aa?.name||'—') + '</span>' +
+              '<span style="color:#6b7280;flex:1">' + escHtml(a.text) + '</span>' +
+              (a.confirmedBy?.includes(uid)
+                ? '<span style="color:#059669;font-size:10px">✅</span>'
+                : '<button class="btn-secondary" style="font-size:10px;padding:2px 8px" onclick="confirmAgreement('+r.id+','+a.id+')">✅ Подтвердить</button>') +
+            '</div>';
+          }).join('')
+        : '<div style="font-size:11px;color:#94a3b8;text-align:center;padding:12px">Пока нет договорённостей</div>') +
+    '</div>' +
+    // Messages
+    '<div style="font-size:12px;font-weight:600;color:#0f1825;margin-bottom:6px">💬 Переписка</div>' +
+    '<div id="drMessages" style="max-height:240px;overflow-y:auto;margin-bottom:8px;padding:4px 0">' +
+      (r.messages?.length
+        ? r.messages.map(m => {
+            const ma = DATA.find(p => p.id === m.authorId);
+            const isMe = m.authorId === uid;
+            return '<div style="display:flex;'+(isMe?'justify-content:flex-end':'')+';margin-bottom:6px">' +
+              '<div style="max-width:80%;padding:8px 12px;border-radius:12px;' +
+                (isMe ? 'background:#2563eb;color:#fff;border-bottom-right-radius:4px' : 'background:#f3f4f8;color:#0f1825;border-bottom-left-radius:4px') + ';font-size:12px;line-height:1.4">' +
+                '<div style="font-size:10px;font-weight:600;margin-bottom:2px;opacity:0.7">' + escHtml(ma?.name||'—') + '</div>' +
+                escHtml(m.text) +
+                '<div style="font-size:9px;margin-top:4px;opacity:0.6;text-align:right">' + (m.createdAt||'').slice(11,16) + '</div></div></div>';
+          }).join('')
+        : '<div style="text-align:center;padding:20px;color:#94a3b8;font-size:11px">Начните переписку</div>') +
+    '</div>' +
+    '<div style="display:flex;gap:6px">' +
+      '<textarea id="drMsgInput" placeholder="Напишите сообщение..." style="flex:1;padding:8px 12px;border:1px solid #ddd;border-radius:8px;font-size:12px;min-height:36px;resize:none" onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();sendDealMessage('+r.id+')}"></textarea>' +
+      '<button class="btn-primary" style="font-size:12px;padding:8px 14px" onclick="sendDealMessage('+r.id+')">➤</button></div>';
+
+  document.getElementById('detailModal').classList.add('show');
+  // Scroll messages to bottom
+  setTimeout(() => {
+    const mc = document.getElementById('drMessages');
+    if (mc) mc.scrollTop = mc.scrollHeight;
+    document.getElementById('drMsgInput')?.focus();
+  }, 50);
+  saveData();
+}
+
+function sendDealMessage(roomId) {
+  const r = DEAL_ROOMS.find(x => x.id === roomId);
+  if (!r) return;
+  const input = document.getElementById('drMsgInput');
+  const text = input?.value.trim();
+  if (!text) return;
+  if (!r.messages) r.messages = [];
+  const uid = getCurrentUserId();
+  r.messages.push({ authorId: uid, text, createdAt: new Date().toISOString(), read: false });
+  r.updatedAt = new Date().toISOString();
+  input.value = '';
+  const otherId = r.initiatorId === uid ? r.participantId : r.initiatorId;
+  if (otherId !== uid) {
+    const me = DATA.find(p => p.id === uid);
+    addNotification('deal_message', roomId, '💬 Новое сообщение в сделке', (me?.name||'Кто-то') + ': ' + text, 'dealrooms', roomId);
+  }
+  saveData();
+  // Re-render just the messages
+  openDealRoom(roomId);
+  renderDealRooms();
+}
+
+function updateDealRoomStatus(roomId) {
+  const r = DEAL_ROOMS.find(x => x.id === roomId);
+  if (!r) return;
+  const sel = document.getElementById('drStatus');
+  r.status = sel.value;
+  r.updatedAt = new Date().toISOString();
+  saveData();
+  notify('Статус изменён');
+  renderDealRooms();
+}
+
+function addAgreement(roomId) {
+  const text = prompt('🏷️ Опишите договорённость:');
+  if (!text || !text.trim()) return;
+  const r = DEAL_ROOMS.find(x => x.id === roomId);
+  if (!r) return;
+  if (!r.agreements) r.agreements = [];
+  r.agreements.push({ id: Date.now(), authorId: getCurrentUserId(), text: text.trim(), confirmedBy: [], createdAt: new Date().toISOString() });
+  r.updatedAt = new Date().toISOString();
+  saveData();
+  openDealRoom(roomId);
+  renderDealRooms();
+}
+
+function confirmAgreement(roomId, agreementId) {
+  const r = DEAL_ROOMS.find(x => x.id === roomId);
+  if (!r) return;
+  const a = r.agreements?.find(x => x.id === agreementId);
+  if (!a) return;
+  if (!a.confirmedBy) a.confirmedBy = [];
+  if (!a.confirmedBy.includes(getCurrentUserId())) a.confirmedBy.push(getCurrentUserId());
+  r.updatedAt = new Date().toISOString();
+  saveData();
+  openDealRoom(roomId);
+  renderDealRooms();
+}
+
+
+// Notification System
+function addNotification(type, refId, title, text, linkView, linkId) {
+  const n = {
+    id: notifIdCounter++,
+    type,
+    refId,
+    title,
+    text,
+    linkView,
+    linkId,
+    read: false,
+    createdAt: new Date().toISOString(),
+  };
+  NOTIFICATIONS.unshift(n);
+  if (NOTIFICATIONS.length > 200) NOTIFICATIONS.length = 200;
+  updateNotifBadge();
+}
+
+function updateNotifBadge() {
+  const badge = document.getElementById('notifBadge');
+  const cnt = NOTIFICATIONS.filter(n => !n.read).length;
+  if (cnt) { badge.style.display = 'inline'; badge.textContent = cnt > 99 ? '99+' : cnt; }
+  else { badge.style.display = 'none'; }
+  // Tab badges
+  const dealUnread = DEAL_ROOMS.reduce((s, r) => s + (r.messages?.filter(m => m.authorId !== getCurrentUserId() && !m.read).length || 0), 0);
+  const projUnread = PROJECT_ROOMS.reduce((s, r) => s + (r.messages?.filter(m => m.authorId !== getCurrentUserId() && !m.read).length || 0), 0);
+  const boardUnread = BOARD_ITEMS.filter(b => b.authorId === getCurrentUserId() && b.responses?.length && b.responses.some(r => !r.read)).length;
+  document.querySelectorAll('.card .tabs .tab').forEach(t => {
+    const m = t.textContent.replace(/[0-9+\s]/g,'');
+    let badgeCnt = 0;
+    if (m.includes('Сделки')) badgeCnt = dealUnread;
+    else if (m.includes('Проектные')) badgeCnt = projUnread;
+    else if (m.includes('Предложения')) badgeCnt = boardUnread;
+    const existing = t.querySelector('.tab-badge');
+    if (badgeCnt) {
+      let b = existing;
+      if (!b) { b = document.createElement('span'); b.className = 'tab-badge'; t.appendChild(b); }
+      b.textContent = badgeCnt > 99 ? '99+' : badgeCnt;
+    } else if (existing) existing.remove();
+  });
+}
+
+function showNotifications() {
+  const unread = NOTIFICATIONS.filter(n => !n.read);
+  const all = NOTIFICATIONS;
+  document.getElementById('detailContent').innerHTML =
+    '<button class="modal-close" onclick="closeDetail()">×</button>' +
+    '<h2 style="margin-bottom:16px">🔔 Уведомления</h2>' +
+    '<div style="display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap">' +
+      '<button class="tab" style="flex:0;padding:5px 12px" onclick="showNotifFilter(\'unread\',this)" id="notifFilterUnread">📌 Непрочитанные (' + unread.length + ')</button>' +
+      '<button class="tab" style="flex:0;padding:5px 12px" onclick="showNotifFilter(\'all\',this)" id="notifFilterAll">📋 Все (' + all.length + ')</button>' +
+      (unread.length ? '<button class="btn-secondary" style="font-size:10px;padding:5px 12px;margin-left:auto" onclick="markAllNotifRead()">✅ Прочитать всё</button>' : '') +
+    '</div><div id="notifList">' +
+    all.map(n => {
+      const days = Math.floor((Date.now() - new Date(n.createdAt).getTime()) / 86400000);
+      return '<div class="notif-item" onclick="navigateToNotif(' + n.id + ')" style="display:flex;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;margin-bottom:4px;' + (n.read ? 'opacity:.6' : 'background:#f0f4ff') + '">' +
+        '<div style="flex-shrink:0;font-size:18px;line-height:1">' + getNotifIcon(n.type) + '</div>' +
+        '<div style="flex:1;min-width:0">' +
+          '<div style="font-size:12px;font-weight:600;color:#0f1825;margin-bottom:2px">' + escHtml(n.title) + '</div>' +
+          '<div style="font-size:11px;color:#6b7280;margin-bottom:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">' + escHtml(n.text) + '</div>' +
+          '<div style="font-size:10px;color:#94a3b8">' + (days === 0 ? 'сегодня' : days + 'д назад') + '</div></div>' +
+        (!n.read ? '<span style="width:8px;height:8px;border-radius:50%;background:#2563eb;flex-shrink:0;margin-top:4px"></span>' : '') +
+      '</div>';
+    }).join('') + '</div>';
+  document.getElementById('detailModal').classList.add('show');
+  window._notifFilter = 'all';
+}
+
+function showNotifFilter(filter, btn) {
+  window._notifFilter = filter;
+  document.querySelectorAll('#detailContent .tab').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const items = filter === 'unread' ? NOTIFICATIONS.filter(n => !n.read) : NOTIFICATIONS;
+  document.getElementById('notifList').innerHTML = items.length ? items.map(n => {
+    const days = Math.floor((Date.now() - new Date(n.createdAt).getTime()) / 86400000);
+    return '<div class="notif-item" onclick="navigateToNotif(' + n.id + ')" style="display:flex;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;margin-bottom:4px;' + (n.read ? 'opacity:.6' : 'background:#f0f4ff') + '">' +
+      '<div style="flex-shrink:0;font-size:18px;line-height:1">' + getNotifIcon(n.type) + '</div>' +
+      '<div style="flex:1;min-width:0">' +
+        '<div style="font-size:12px;font-weight:600;color:#0f1825;margin-bottom:2px">' + escHtml(n.title) + '</div>' +
+        '<div style="font-size:11px;color:#6b7280;margin-bottom:2px">' + escHtml(n.text) + '</div>' +
+        '<div style="font-size:10px;color:#94a3b8">' + (days === 0 ? 'сегодня' : days + 'д назад') + '</div></div>' +
+      (!n.read ? '<span style="width:8px;height:8px;border-radius:50%;background:#2563eb;flex-shrink:0;margin-top:4px"></span>' : '') +
+    '</div>';
+  }).join('') : '<div style="text-align:center;padding:30px;color:#94a3b8;font-size:13px">Нет уведомлений</div>';
+}
+
+function getNotifIcon(type) {
+  const icons = { board_response: '📩', deal_created: '💼', deal_message: '💬', project_message: '💬', status_change: '📌' };
+  return icons[type] || '🔔';
+}
+
+function markAllNotifRead() {
+  NOTIFICATIONS.forEach(n => n.read = true);
+  updateNotifBadge();
+  saveData();
+  showNotifications();
+}
+
+function navigateToNotif(id) {
+  const n = NOTIFICATIONS.find(x => x.id === id);
+  if (!n) return;
+  n.read = true;
+  updateNotifBadge();
+  saveData();
+  closeDetail();
+  if (n.linkView) {
+    const btn = document.querySelector('.card .tabs .tab[onclick*="' + n.linkView + '"]');
+    if (btn) switchView(n.linkView, btn);
+    if (n.linkId) {
+      if (n.linkView === 'dealrooms') openDealRoom(n.linkId);
+      else if (n.linkView === 'projectrooms') openProjectRoomModal(n.linkId);
+    }
+  }
+}
+
+function shareLink() {
+  const url = window.location.href;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(() => notify('📤 Ссылка скопирована: ' + url)).catch(() => fallbackCopy(url));
+  } else { fallbackCopy(url); }
+}
+function fallbackCopy(url) {
+  const ta = document.createElement('textarea');
+  ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); notify('📤 Ссылка скопирована'); }
+  catch(e) { prompt('Скопируйте ссылку вручную:', url); }
+  document.body.removeChild(ta);
+}
+
+// Activity Scoring
+const SCORE_LEVELS = [
+  { min: 0, label: 'Новичок', icon: '🌱', color: '#6b7280' },
+  { min: 10, label: 'Участник', icon: '🔹', color: '#2563eb' },
+  { min: 30, label: 'Активный', icon: '🔷', color: '#7c3aed' },
+  { min: 60, label: 'Лидер сети', icon: '⭐', color: '#d97706' },
+  { min: 100, label: 'Эксперт сети', icon: '🏆', color: '#059669' },
+];
+
+function calcScore(personId) {
+  let s = 0;
+  BOARD_ITEMS.forEach(b => { if (b.authorId === personId) s += 5; });
+  BOARD_ITEMS.forEach(b => { (b.responses||[]).forEach(r => { if (r.authorId === personId) s += 2; }); });
+  DEAL_ROOMS.forEach(r => { if (r.initiatorId === personId || r.participantId === personId) { s += 10; (r.messages||[]).forEach(m => { if (m.authorId === personId) s += 3; }); } });
+  PROJECT_ROOMS.forEach(r => { if ((r.participants||[]).includes(personId)) { s += 10; (r.messages||[]).forEach(m => { if (m.authorId === personId) s += 3; }); } });
+  CONNECTIONS.forEach(c => { if (c.from === personId || c.to === personId) s += 1; });
+  PROJECTS.forEach(p => { if ((p.people||[]).includes(personId)) s += 3; });
+  return s;
+}
+
+function getScoreLevel(score) {
+  let l = SCORE_LEVELS[0];
+  SCORE_LEVELS.forEach(sl => { if (score >= sl.min) l = sl; });
+  return l;
+}
+
+function networkScore() {
+  return DATA.reduce((s,p) => s + calcScore(p.id), 0);
+}
+
+function networkStats() {
+  const totalMsgs = DEAL_ROOMS.reduce((s,r) => s + (r.messages||[]).length, 0) + PROJECT_ROOMS.reduce((s,r) => s + (r.messages||[]).length, 0);
+  return {
+    totalBoardPosts: BOARD_ITEMS.length,
+    totalResponses: BOARD_ITEMS.reduce((s,b) => s + (b.responses||[]).length, 0),
+    totalDealRooms: DEAL_ROOMS.length,
+    totalProjectRooms: PROJECT_ROOMS.length,
+    totalMessages: totalMsgs,
+    networkScore: networkScore(),
+  };
+}
+
+
+// Project Rooms
+const PROJECT_ROOM_STATUSES = [
+  { id: 'active', label: '🟢 Активный', color: '#059669', bg: '#ecfdf5' },
+  { id: 'completed', label: '✅ Завершён', color: '#6b7280', bg: '#f3f4f8' },
+];
+
+function setProjectRoomFilter(f, btn) {
+  projectRoomFilter = f;
+  document.querySelectorAll('#projectRoomFilter .tab').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderProjectRooms();
+}
+
+function renderProjectRooms() {
+  const el = document.getElementById('projectRoomList');
+  const uid = getCurrentUserId();
+  const items = PROJECT_ROOMS.filter(r => projectRoomFilter === 'all' || r.status === projectRoomFilter)
+    .filter(r => !r.participants || r.participants.includes(uid))
+    .sort((a, b) => (b.updatedAt||'').localeCompare(a.updatedAt||''));
+  if (!items.length) {
+    el.innerHTML = '<div style="text-align:center;padding:40px 20px;color:#94a3b8"><div style="font-size:40px;margin-bottom:12px">📁</div><p style="font-size:14px;font-weight:500;color:#6b7280">Нет проектных комнат</p><p style="font-size:12px;margin-top:4px">Создайте комнату из карточки проекта</p></div>';
+    return;
+  }
+  el.innerHTML = items.map(r => {
+    const proj = PROJECTS.find(p => p.id === r.projectId);
+    const st = PROJECT_ROOM_STATUSES.find(s => s.id === r.status) || PROJECT_ROOM_STATUSES[0];
+    const lastMsg = r.messages?.length ? r.messages[r.messages.length-1] : null;
+    const unread = r.messages?.filter(m => m.authorId !== uid && !m.read).length || 0;
+    return '<div class="project-room-card" onclick="openProjectRoomModal('+r.id+')" style="background:var(--surface);border:1px solid #eef2f6;border-radius:12px;padding:14px;margin-bottom:10px;cursor:pointer;transition:var(--transition)">' +
+      '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:6px">' +
+        '<div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">' +
+          '<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:'+st.bg+';font-size:13px">📁</span>' +
+          '<div style="min-width:0"><span style="font-size:13px;font-weight:600;color:#0f1825">' + escHtml(proj?.name||'—') + '</span>' +
+          '<span style="font-size:10px;color:#94a3b8;margin-left:8px">' + (r.createdAt||'').slice(0,10) + '</span></div></div>' +
+        '<div style="display:flex;gap:4px;align-items:center;flex-shrink:0">' +
+          (unread ? '<span style="background:#dc2626;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;min-width:18px;text-align:center">'+unread+'</span>' : '') +
+          '<span style="font-size:10px;padding:3px 8px;border-radius:6px;font-weight:600;background:'+st.bg+';color:'+st.color+'">' + st.label + '</span></div></div>' +
+      (lastMsg ? '<div style="font-size:11px;color:#94a3b8;padding-top:6px;border-top:1px solid #eef2f6;margin-top:6px">' +
+        escHtml(lastMsg.text.slice(0,80)) + (lastMsg.text.length > 80 ? '...' : '') + '</div>' : '') +
+    '</div>';
+  }).join('');
+}
+
+function openProjectRoom(projectId) {
+  let r = PROJECT_ROOMS.find(x => x.projectId === projectId);
+  if (!r) {
+    const proj = PROJECTS.find(p => p.id === projectId);
+    if (!proj) return;
+    r = {
+      id: projectRoomIdCounter++,
+      projectId,
+      participants: proj.people || [getCurrentUserId()],
+      messages: [],
+      resources: [],
+      status: 'active',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    PROJECT_ROOMS.push(r);
+    saveData();
+    notify('📁 Проектная комната создана');
+  }
+  openProjectRoomModal(r.id);
+}
+
+function openProjectRoomModal(id) {
+  const r = PROJECT_ROOMS.find(x => x.id === id);
+  if (!r) return;
+  const uid = getCurrentUserId();
+  r.messages?.forEach(m => { if (m.authorId !== uid) m.read = true; });
+  const proj = PROJECTS.find(p => p.id === r.projectId);
+  const st = PROJECT_ROOM_STATUSES.find(s => s.id === r.status) || PROJECT_ROOM_STATUSES[0];
+  const statusOpts = PROJECT_ROOM_STATUSES.map(s =>
+    '<option value="'+s.id+'"'+(s.id===r.status?' selected':'')+'>'+s.label+'</option>'
+  ).join('');
+  const participants = (r.participants||[]).map(pid => {
+    const p = DATA.find(x => x.id === pid);
+    return p ? escHtml(p.name) : '—';
+  }).join(', ');
+
+  document.getElementById('detailContent').innerHTML =
+    '<button class="modal-close" onclick="closeDetail()">×</button>' +
+    '<h2 style="margin-bottom:4px">📁 ' + escHtml(proj?.name||'—') + '</h2>' +
+    '<div style="font-size:11px;color:#94a3b8;margin-bottom:12px">👥 ' + participants + '</div>' +
+    '<div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;padding:8px 12px;background:#f8f9fb;border-radius:8px">' +
+      '<span style="font-size:11px;color:#6b7280">Статус:</span>' +
+      '<select id="prStatus" style="flex:1;padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:12px;background:#fff" onchange="updateProjectRoomStatus('+r.id+')">' + statusOpts + '</select>' +
+    '</div>' +
+    // Resources
+    '<div style="margin-bottom:12px">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">' +
+        '<span style="font-size:12px;font-weight:600;color:#0f1825">🔗 Ресурсы</span>' +
+        '<button class="btn-secondary" style="font-size:10px;padding:3px 10px" onclick="addProjectResource('+r.id+')">➕ Добавить</button></div>' +
+      (r.resources?.length
+        ? r.resources.map(res => '<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:#f8f9fb;border-radius:8px;margin-bottom:4px;font-size:12px">' +
+            '<a href="' + escHtml(res.url) + '" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(res.title) + '</a>' +
+            '<span style="font-size:10px;color:#94a3b8;flex-shrink:0">🔗</span></div>').join('')
+        : '<div style="font-size:11px;color:#94a3b8;text-align:center;padding:12px">Нет прикреплённых ресурсов</div>') +
+    '</div>' +
+    // Messages
+    '<div style="font-size:12px;font-weight:600;color:#0f1825;margin-bottom:6px">💬 Обсуждение</div>' +
+    '<div id="prMessages" style="max-height:240px;overflow-y:auto;margin-bottom:8px;padding:4px 0">' +
+      (r.messages?.length
+        ? r.messages.map(m => {
+            const ma = DATA.find(p => p.id === m.authorId);
+            const isMe = m.authorId === uid;
+            return '<div style="display:flex;'+(isMe?'justify-content:flex-end':'')+';margin-bottom:6px">' +
+              '<div style="max-width:80%;padding:8px 12px;border-radius:12px;' +
+                (isMe ? 'background:#2563eb;color:#fff;border-bottom-right-radius:4px' : 'background:#f3f4f8;color:#0f1825;border-bottom-left-radius:4px') + ';font-size:12px;line-height:1.4">' +
+                '<div style="font-size:10px;font-weight:600;margin-bottom:2px;opacity:0.7">' + escHtml(ma?.name||'—') + '</div>' +
+                escHtml(m.text) +
+                '<div style="font-size:9px;margin-top:4px;opacity:0.6;text-align:right">' + (m.createdAt||'').slice(11,16) + '</div></div></div>';
+          }).join('')
+        : '<div style="text-align:center;padding:20px;color:#94a3b8;font-size:11px">Начните обсуждение</div>') +
+    '</div>' +
+    '<div style="display:flex;gap:6px">' +
+      '<textarea id="prMsgInput" placeholder="Напишите сообщение..." style="flex:1;padding:8px 12px;border:1px solid #ddd;border-radius:8px;font-size:12px;min-height:36px;resize:none" onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();sendProjectRoomMessage('+r.id+')}"></textarea>' +
+      '<button class="btn-primary" style="font-size:12px;padding:8px 14px" onclick="sendProjectRoomMessage('+r.id+')">➤</button></div>';
+
+  document.getElementById('detailModal').classList.add('show');
+  setTimeout(() => {
+    const mc = document.getElementById('prMessages');
+    if (mc) mc.scrollTop = mc.scrollHeight;
+    document.getElementById('prMsgInput')?.focus();
+  }, 50);
+  saveData();
+}
+
+function sendProjectRoomMessage(roomId) {
+  const r = PROJECT_ROOMS.find(x => x.id === roomId);
+  if (!r) return;
+  const input = document.getElementById('prMsgInput');
+  const text = input?.value.trim();
+  if (!text) return;
+  if (!r.messages) r.messages = [];
+  const uid = getCurrentUserId();
+  r.messages.push({ authorId: uid, text, createdAt: new Date().toISOString(), read: false });
+  r.updatedAt = new Date().toISOString();
+  input.value = '';
+  (r.participants||[]).forEach(pid => {
+    if (pid !== uid) {
+      const me = DATA.find(p => p.id === uid);
+      const proj = PROJECTS.find(p => p.id === r.projectId);
+      addNotification('project_message', roomId, '💬 ' + (proj?.name||'Проект'), (me?.name||'Кто-то') + ': ' + text, 'projectrooms', roomId);
+    }
+  });
+  saveData();
+  openProjectRoomModal(roomId);
+  renderProjectRooms();
+}
+
+function updateProjectRoomStatus(roomId) {
+  const r = PROJECT_ROOMS.find(x => x.id === roomId);
+  if (!r) return;
+  r.status = document.getElementById('prStatus').value;
+  r.updatedAt = new Date().toISOString();
+  saveData();
+  notify('Статус изменён');
+  renderProjectRooms();
+}
+
+function addProjectResource(roomId) {
+  const title = prompt('🔗 Название ресурса:');
+  if (!title || !title.trim()) return;
+  const url = prompt('🌐 URL:');
+  if (!url || !url.trim()) return;
+  const r = PROJECT_ROOMS.find(x => x.id === roomId);
+  if (!r) return;
+  if (!r.resources) r.resources = [];
+  r.resources.push({ title: title.trim(), url: url.trim(), addedBy: getCurrentUserId(), createdAt: new Date().toISOString() });
+  r.updatedAt = new Date().toISOString();
+  saveData();
+  openProjectRoomModal(roomId);
+  renderProjectRooms();
+}
+
+
+// Strategy / Economics
+function renderStrategy() {
+  // Economy
+  const totalBudget = PROJECTS.reduce((s, p) => {
+    const num = parseFloat((p.budget||'').replace(/[^0-9.]/g, ''));
+    return s + (isNaN(num) ? 0 : num);
+  }, 0);
+  const commission = totalBudget * 0.03;
+  document.getElementById('ecoTotalValue').textContent = totalBudget >= 1000 ? (totalBudget/1000).toFixed(1) + ' млрд' : totalBudget.toFixed(0) + ' млн';
+  document.getElementById('ecoCommission').textContent = commission >= 1000 ? (commission/1000).toFixed(2) + ' млрд' : commission.toFixed(0) + ' млн';
+  document.getElementById('ecoDealsCount').textContent = DEALS.filter(d => d.status === 'closed').length;
+  document.getElementById('ecoActiveProjects').textContent = PROJECTS.filter(p => p.stage !== 'done' && p.stage !== 'frozen').length;
+
+  // Type distribution
+  const typeCounts = {};
+  DATA.forEach(p => {
+    const t = TYPE_LABELS[p.type] || p.type || 'Участник';
+    typeCounts[t] = (typeCounts[t] || 0) + 1;
+  });
+  const typeMax = Math.max(...Object.values(typeCounts), 1);
+  const typeColors = ['#9b59b6','#3498db','#2ecc71','#e67e22','#f1c40f','#95a5a6','#e74c3c','#1abc9c'];
+  const types = Object.entries(typeCounts).sort((a,b) => b[1] - a[1]);
+  document.getElementById('ecoTypeChart').innerHTML = types.map(([t, c], i) =>
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:12px">' +
+    '<span style="width:80px;color:#666;text-align:right">' + escHtml(t) + '</span>' +
+    '<div style="flex:1;height:20px;background:#eee;border-radius:4px;overflow:hidden">' +
+    '<div style="height:100%;width:' + (c/typeMax*100) + '%;background:' + (typeColors[i % typeColors.length]) + ';border-radius:4px;display:flex;align-items:center;padding-left:6px">' +
+    '<span style="font-size:10px;color:white;font-weight:600;mix-blend-mode:difference">' + c + '</span></div></div></div>'
+  ).join('');
+}
+
+function makeProjectExternal(id) {
+  const p = PROJECTS.find(x => x.id === id);
+  if (!p) return;
+  p.external = !p.external;
+  saveData();
+  renderProjectsList();
+  renderStrategy();
+  notify(p.external ? '🌐 Проект опубликован во внешнем контуре' : '🔒 Проект скрыт из внешнего контура');
+}
+
+
+// Quick stats for left panel
+function renderQuickStats() {
+  const el = document.getElementById('quickStats');
+  const zoneCounts = [0,0,0,0,0,0];
+  DATA.forEach(p => { const z = p.zone||2; if (z>=0 && z<6) zoneCounts[z]++; });
+  const total = DATA.length;
+  const withTags = DATA.filter(p => p.competencies || p.requests).length;
+  const withTouches = DATA.filter(p => p.touches && p.touches.length).length;
+  const activeProjs = PROJECTS.filter(p => p.stage !== 'done' && p.stage !== 'frozen').length;
+  const matches = findEnhancedMatches().length;
+  const zMax = Math.max(...zoneCounts, 1);
+  el.innerHTML =
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">' +
+    '<div style="background:#ffffff;border-radius:12px;padding:14px;text-align:center;border:1px solid #eef2f6;box-shadow:0 1px 3px rgba(0,0,0,.04)"><div style="font-size:13px;margin-bottom:4px">👥</div><div style="font-size:24px;font-weight:700;color:#0f1825;letter-spacing:-.3px">' + total + '</div><div style="font-size:10px;color:#8895a7;font-weight:500;margin-top:2px">участников</div></div>' +
+    '<div style="background:#ffffff;border-radius:12px;padding:14px;text-align:center;border:1px solid #eef2f6;box-shadow:0 1px 3px rgba(0,0,0,.04)"><div style="font-size:13px;margin-bottom:4px">🔗</div><div style="font-size:24px;font-weight:700;color:#059669;letter-spacing:-.3px">' + matches + '</div><div style="font-size:10px;color:#8895a7;font-weight:500;margin-top:2px">мэтчингов</div></div>' +
+    '<div style="background:#ffffff;border-radius:12px;padding:14px;text-align:center;border:1px solid #eef2f6;box-shadow:0 1px 3px rgba(0,0,0,.04)"><div style="font-size:13px;margin-bottom:4px">📋</div><div style="font-size:24px;font-weight:700;color:#2563eb;letter-spacing:-.3px">' + activeProjs + '</div><div style="font-size:10px;color:#8895a7;font-weight:500;margin-top:2px">проектов</div></div>' +
+    '<div style="background:#ffffff;border-radius:12px;padding:14px;text-align:center;border:1px solid #eef2f6;box-shadow:0 1px 3px rgba(0,0,0,.04)"><div style="font-size:13px;margin-bottom:4px">💬</div><div style="font-size:24px;font-weight:700;color:#8b5cf6;letter-spacing:-.3px">' + withTouches + '</div><div style="font-size:10px;color:#8895a7;font-weight:500;margin-top:2px">с касаниями</div></div>' +
+    '</div>' +
+    '<div style="display:flex;align-items:center;gap:8px;margin:0 0 12px"><span style="font-size:13px;font-weight:600;color:#374151">🎯 Распределение по зонам</span><span style="flex:1;height:1px;background:#eef2f6"></span></div>' +
+    ZONES.map((z,i) => {
+      const c = zoneCounts[i] || 0;
+      const pct = total ? Math.round(c/total*100) : 0;
+      return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;font-size:12px">' +
+        '<span style="display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:22px;border-radius:6px;background:' + z.color + '18;color:' + z.color + ';font-size:10px;font-weight:800;letter-spacing:.3px">' + z.k.toUpperCase() + '</span>' +
+        '<div style="flex:1;height:20px;background:#eef2f6;border-radius:6px;overflow:hidden;position:relative">' +
+        '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,' + z.color + ',' + z.color + 'cc);border-radius:6px;transition:width .6s cubic-bezier(.4,0,.2,1);box-shadow:inset 0 1px 0 rgba(255,255,255,.15)"></div>' +
+        '<span style="position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:10px;font-weight:700;color:' + (pct > 30 ? 'white' : z.color) + '">' + (c > 0 ? c : '') + '</span></div>' +
+        '<span style="color:#8895a7;min-width:32px;text-align:right;font-weight:600;font-size:11px">' + pct + '%</span></div>';
+    }).join('');
+}
+
+// Init
+loadData();
+renderQuickStats();
+renderTagSelectors();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/radar/sw.js');
+}
+</script>
+</body>
+</html>
