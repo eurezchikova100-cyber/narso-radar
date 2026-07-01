@@ -499,11 +499,12 @@ tr:hover td { background:#f8f9fb; }
     </div>
 
     <div id="viewSync" class="hidden">
-      <h2>🔄 Синхронизация с Onto</h2>
-      <p style="font-size:13px;color:#666;margin-bottom:16px">Перенос данных между приложением и графовой базой</p>
+      <h2>🔄 Синхронизация</h2>
+      <p style="font-size:13px;color:#666;margin-bottom:16px">Перенос данных между приложением, графовой базой и Telegram-ботом</p>
       <div class="sync-bar">
         <button class="btn-outline" onclick="prepExportToOnto()">📤 Экспорт в Onto</button>
         <button class="btn-outline" onclick="prepImportFromOnto()">📥 Импорт из Onto</button>
+        <button class="btn-primary" onclick="syncFromTelegramBot()">🤖 Из Telegram-бота</button>
       </div>
       <div id="syncBlock"></div>
     </div>
@@ -1915,6 +1916,108 @@ function doImportFromOnto() {
     document.getElementById('importOntoResult').innerHTML='<p style="color:#059669">✅ Загружено '+data.length+' человек</p>';
     notify('📥 Загружено '+data.length+' из Onto');
   } catch(e) { notify('Ошибка: '+e.message,'error'); }
+}
+
+// Sync from Telegram Bot
+function estimateAssets(p) {
+  const dq=p.dataQuality||3, exp=p.experience||0;
+  const comps=(p.competencies||'').split(',').filter(Boolean).length;
+  return [
+    Math.min(10,5+(dq-3)+Math.min(Math.floor(exp/5),3)+Math.min(Math.floor(comps/2),2)),
+    Math.min(10,4+((p.fullName&&p.fullName.includes('ООО'))?1:2)+(p.inn?1:0)+Math.min(Math.floor(exp/5),2)),
+    Math.min(10,4+(p.socials?p.socials.length:0)+(p.site?2:0)+Math.min(dq,2)),
+    Math.min(10,4+(dq-2)+Math.min(Math.floor(exp/5),2)+(p.status==='соучредитель'?1:0))
+  ];
+}
+function estimateLiabilities(p) {
+  const reqs=(p.requests||'').split(',').filter(Boolean).length;
+  const wlen=(p.weakness||'').length;
+  const comps=(p.competencies||'').split(',').filter(Boolean).length;
+  return [
+    Math.min(10,3+Math.min(reqs,4)+(p.competencies?0:2)),
+    Math.min(10,3+Math.min(Math.floor(wlen/10),3)+(p.inn?0:2)+(p.site?0:1))
+  ];
+}
+function estimateTypeTag(p) {
+  const map={домостроение:'Девелопер / Застройщик',девелопер:'Девелопер / Застройщик',инженерный_подрядчик:'Генподрядчик / СМР',архитектура:'Архитектор',управление:'Управление проектами',соучредитель:'Стратегия',инфраструктура:'Девелопер / Застройщик',проектный_инжиниринг:'Инженер-проектировщик',социальный_капитал:'Консалтинг / Экспертиза'};
+  return map[p.type]||p.category||'Участник';
+}
+async function syncFromTelegramBot() {
+  const block=document.getElementById('syncBlock');
+  block.innerHTML='<p style="font-size:14px;color:#666">⏳ Загрузка данных из бота...</p>';
+  switchView('sync', document.querySelector('.card .tabs:last-child .tab:last-child'));
+  try {
+    const resp=await fetch('/data/participants.json');
+    if (!resp.ok) throw new Error('HTTP '+resp.status);
+    const container=await resp.json();
+    const raw=container.participants||[];
+    const imported=raw.map(p=>{
+      const noteParts=[];
+      if (p.strength) noteParts.push('✅ '+p.strength);
+      if (p.weakness) noteParts.push('⚠️ '+p.weakness);
+      if (p.synergy) noteParts.push('🤝 '+p.synergy);
+      if (p.note) noteParts.push(p.note);
+      return {
+        name: p.name,
+        company: p.fullName||'',
+        position: estimateTypeTag(p),
+        phone: p.phone||'',
+        email: p.email||'',
+        note: noteParts.join(' | '),
+        assets: estimateAssets(p),
+        liabilities: estimateLiabilities(p),
+        competencies: p.competencies||'',
+        requests: p.requests||'',
+        photo: p.photo||'',
+        logo: p.logo||'',
+        messenger: p.site||'',
+        type: p.type||'',
+        synergy: p.synergy||'',
+        strength: p.strength||'',
+        weakness: p.weakness||'',
+        _botId: p.id||''
+      };
+    });
+    // merge — update existing, add new
+    let added=0, updated=0;
+    imported.forEach(np=>{
+      const idx=DATA.findIndex(d=>
+        (d.name&&np.name&&d.name.toLowerCase()===np.name.toLowerCase())||
+        (d.company&&np.company&&d.company.toLowerCase()===np.company.toLowerCase())
+      );
+      if (idx>=0) {
+        // preserve id, local data but update fields from bot
+        const id=DATA[idx].id;
+        const created=DATA[idx].created;
+        const zone=DATA[idx].zone;
+        Object.assign(DATA[idx],np);
+        DATA[idx].id=id;
+        DATA[idx].created=created;
+        DATA[idx].zone=zone||calcPersonZone(DATA[idx]);
+        updated++;
+      } else {
+        np.id=idCounter++;
+        np.zone=calcPersonZone(np);
+        np.created=new Date().toISOString();
+        DATA.push(np);
+        added++;
+      }
+    });
+    saveData();
+    const msg='✅ Загружено из Telegram-бота';
+    const detail=(added?`➕ Добавлено: ${added}`:'')+(updated?`; 🔄 Обновлено: ${updated}`:'');
+    block.innerHTML='<h3>🤖 Telegram-бот</h3>'+
+      '<p style="font-size:14px;color:#059669;margin:8px 0">'+msg+'</p>'+
+      '<p style="font-size:13px;color:#666">'+detail+'</p>'+
+      '<button class="btn-secondary" style="margin-top:8px" onclick="renderPeople()">👥 Открыть список</button>';
+    notify(msg+'. '+detail);
+    renderPeople();
+  } catch(e) {
+    block.innerHTML='<h3>🤖 Telegram-бот</h3><p style="font-size:14px;color:#dc2626">❌ Ошибка: '+e.message+'</p>'+
+      '<p style="font-size:13px;color:#666;margin-top:8px">Убедись, что сервер запущен (python3 -m http.server 8080) и файл /data/participants.json существует.</p>'+
+      '<p style="font-size:13px;color:#666">Запусти бота и build_data.py чтобы сгенерировать свежий JSON.</p>';
+    notify('Ошибка синхронизации: '+e.message,'error');
+  }
 }
 
 // Tag selector functions
